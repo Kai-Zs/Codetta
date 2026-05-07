@@ -18,6 +18,7 @@
         class="w-full px-4 py-3 border border-gray-200 rounded-lg text-center text-lg tracking-widest focus:outline-none focus:border-purple" />
       <button @click="doVerify" :disabled="pin.length!==4"
         class="w-full mt-4 py-3 bg-purple text-white rounded-lg disabled:opacity-40 font-medium">确认</button>
+      <p class="text-center text-xs text-gray-400 mt-4">忘记PIN？请联系作者</p>
     </div>
 
     <!-- 阶段3：设置 PIN（首次） -->

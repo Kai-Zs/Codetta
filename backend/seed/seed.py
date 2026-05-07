@@ -51,17 +51,19 @@ def load_qa_rows(path):
 
 
 def load_roster_rows(path):
+    """读取名单 Excel，返回 [(student_id, name), ...]"""
     wb = openpyxl.load_workbook(path)
     ws = wb.active
-    rows = list(ws.iter_rows(values_only=True))
-    sids = []
-    for row in rows:
-        for cell in row:
-            if cell is not None:
-                val = str(cell).strip()
-                if val.isdigit() and len(val) == 10:
-                    sids.append(val)
-    return sids
+    result = []
+    for r in range(2, ws.max_row + 1):
+        sid = ws.cell(row=r, column=1).value
+        name = ws.cell(row=r, column=2).value
+        if sid is None:
+            continue
+        sid = str(sid).strip()
+        if sid.isdigit() and len(sid) == 10:
+            result.append((sid, str(name).strip() if name else sid[-4:] + "同学"))
+    return result
 
 
 def clean_dollar(val):
@@ -235,12 +237,12 @@ def seed_questions(db):
 
 
 def seed_roster(db):
-    sids = load_roster_rows(EXCEL_ROSTER)
-    for sid in sids:
+    entries = load_roster_rows(EXCEL_ROSTER)
+    for sid, name in entries:
         db.execute("""
             INSERT OR IGNORE INTO users (student_id, name, in_roster)
-            VALUES (?, '待定', 1)
-        """, (sid,))
+            VALUES (?, ?, 1)
+        """, (sid, name))
 
 
 def main():

@@ -5,12 +5,24 @@ from ..database import get_db
 from ..config import PIN_MAX_ATTEMPTS, PIN_LOCK_MINUTES
 
 
+def _lookup_roster(db, student_id: str) -> str | None:
+    """在 users 表中查找名单内用户姓名（仅限 in_roster=1）"""
+    row = db.execute("SELECT name FROM users WHERE student_id=? AND in_roster=1", (student_id,)).fetchone()
+    return row["name"] if row else None
+
+
 def handle_login(student_id: str) -> dict:
     with get_db() as db:
         row = db.execute("SELECT id, name, pin, in_roster FROM users WHERE student_id=?", (student_id,)).fetchone()
         if not row:
-            name = student_id[-4:] + "同学"
-            cur = db.execute("INSERT INTO users (student_id, name, in_roster) VALUES (?,?,0)", (student_id, name))
+            roster_name = _lookup_roster(db, student_id)
+            if roster_name:
+                name = roster_name
+                in_roster = 1
+            else:
+                name = student_id[-4:] + "同学"
+                in_roster = 0
+            cur = db.execute("INSERT INTO users (student_id, name, in_roster) VALUES (?,?,?)", (student_id, name, in_roster))
             user_id = cur.lastrowid
             return {"status": "need_setup", "name": name, "need_pin": False, "user_id": user_id}
         if not row["pin"]:

@@ -4,9 +4,7 @@
     <header class="flex justify-between items-center px-4 py-3">
       <div></div>
       <button @click="showMenu=!showMenu" class="text-sm text-gray-600">{{ auth.user?.name }}</button>
-      <button @click="showSettings=true" class="text-gray-500">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-      </button>
+      <div class="w-5"></div>
     </header>
 
     <!-- 进度 -->
@@ -17,7 +15,8 @@
 
     <!-- 主区域 -->
     <main class="flex-1 flex flex-col items-center justify-center px-4 -mt-16">
-      <h1 class="text-4xl font-[Cormorant_Garamond] text-purple mb-12">练笔小筑</h1>
+      <h1 class="text-4xl font-[Cormorant_Garamond] text-purple mb-2">练笔小筑</h1>
+      <p class="text-sm text-gray-400 tracking-widest mb-12">一题一阶，拾级而上</p>
       <button @click="goSequential" class="w-48 py-4 bg-purple text-white rounded-xl text-lg font-medium mb-4 shadow-lg shadow-purple/30 hover:bg-purple/90 transition">顺序刷题</button>
       <button @click="showFilter=true" class="w-48 py-4 border-2 border-purple text-purple rounded-xl text-lg font-medium hover:bg-purple/5 transition">随机抽题</button>
     </main>
@@ -27,6 +26,9 @@
       <div class="flex items-center gap-2 text-xs text-gray-400">
         <span>Powered by 凯Z闪</span>
       </div>
+      <button @click="showSettings=true" class="text-gray-400 hover:text-gray-600 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </button>
     </div>
 
     <BottomDisclaimer />
