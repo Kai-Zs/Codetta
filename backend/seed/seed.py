@@ -17,7 +17,7 @@ from app.database import get_db, init_db
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 EXCEL_QA = os.path.join(ROOT, "data", "题库(622道).xlsx")
 EXCEL_ROSTER = os.path.join(ROOT, "data", "2544名单.xlsx")
-HTML_PROG = os.path.join(ROOT, "data", "编程题抽出来的题库.htm")
+HTML_PROG = os.path.join(ROOT, "data", "编程题抽出来的题库.files", "sheet001.htm")
 
 
 def load_qa_rows(path):
@@ -88,7 +88,7 @@ def clean_answer_dollar(val):
 
 
 def parse_prog_html(path):
-    """解析编程题 HTML：font10 color=red → 答案，黑色 → 模板"""
+    """解析编程题 HTML 表格：td[4] 中 font10(红)=答案，其余=模板"""
     if not os.path.exists(path):
         return {}
     html = None
@@ -102,27 +102,42 @@ def parse_prog_html(path):
     if html is None:
         print(f"无法解码 HTML 文件: {path}")
         return {}
+
     prog_map = {}
-    blocks = re.findall(
-        r'<p class="MsoNormal"><b><span[^>]*>(\d+\.\d+)</span></b></p>(.*?)(?=<p class="MsoNormal"><b><span|$)',
-        html, re.DOTALL
-    )
-    for num, body in blocks:
+    rows = re.findall(r'<tr[^>]*>(.*?)</tr>', html, re.DOTALL)
+    for row in rows:
+        tds = re.findall(r'<td[^>]*>(.*?)</td>', row, re.DOTALL)
+        if len(tds) < 5:
+            continue
+        qn = re.sub(r'<[^>]+>', '', tds[0]).strip()
+        if not re.match(r'^\d+\.\d+', qn):
+            continue
+
+        # td[4] = 代码列
+        code_html = tds[4]
         template_parts = []
         answer_parts = []
-        for seg in re.split(r'(<font class="font10"[^>]*>.*?</font>)', body):
-            m = re.match(r'<font class="font10"[^>]*>(.*?)</font>', seg)
+        # 按 font10 标签分割（font 和 class 可能跨行）
+        parts = re.split(r'(<font[^>]*class="font10"[^>]*>.*?</font>)', code_html, flags=re.DOTALL)
+        for part in parts:
+            m = re.match(r'<font[^>]*class="font10"[^>]*>(.*?)</font>', part, re.DOTALL)
             if m:
-                is_red = 'color:red' in seg[:seg.index('>')] if '>' in seg else False
-                if is_red:
-                    answer_parts.append(m.group(1))
-                else:
-                    template_parts.append(m.group(1))
+                answer_parts.append(m.group(1))
             else:
-                template_parts.append(seg)
-        prog_map[num] = {
-            "template": "".join(template_parts).strip(),
-            "answer_code": "".join(answer_parts).strip(),
+                template_parts.append(part)
+
+        def clean_html(s):
+            s = re.sub(r'<br\s*/?>', '\n', s)
+            s = re.sub(r'<ruby>.*?</ruby>', '', s, flags=re.DOTALL)
+            s = re.sub(r'<[^>]+>', '', s)
+            s = s.replace('&nbsp;', ' ').replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>').replace('&quot;', '"')
+            s = s.replace('\r\n', '\n').replace('\r', '\n')
+            lines = [l.strip() for l in s.split('\n')]
+            return '\n'.join(l for l in lines if l).strip()
+
+        prog_map[qn] = {
+            "template": clean_html("".join(template_parts)),
+            "answer_code": clean_html("".join(answer_parts)),
         }
     return prog_map
 
