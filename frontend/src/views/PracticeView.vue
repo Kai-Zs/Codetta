@@ -16,7 +16,7 @@
     </header>
 
     <!-- 进度条 -->
-    <div class="h-1 bg-gray-100"><div class="h-full bg-purple transition-all duration-300" :style="{ width: progressPercent + '%' }" /></div>
+    <div class="h-1 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden"><div class="h-full bg-purple dark:bg-purple/80 transition-all duration-300 rounded-full" :style="{ width: progressPercent + '%' }" /></div>
 
     <!-- 翻页 -->
     <div class="flex justify-between px-4 py-1.5">
@@ -172,7 +172,7 @@ const hasPrev = computed(() => questionIndex.value > 0)
 const hasNext = computed(() => questionIndex.value < questions.value.length - 1)
 
 const sheetItems = computed(() =>
-  questions.value.map((q, i) => ({ id: q.id, label: i + 1, status: answerStatuses.value[q.id] || null })))
+  questions.value.map((q) => ({ id: q.id, label: q.q_number, chapter: q.chapter, status: answerStatuses.value[q.id] || null })))
 
 const renderedContent = computed(() => {
   if (!question.value?.content) return ''
@@ -300,7 +300,7 @@ onMounted(async () => {
     else if (route.path.includes('/wrong')) store.setMode('wrong')
     else store.setMode('sequential')
 
-    let params = {}
+    let params = { per: 1000 }
     if (isFromWrong.value) {
       const ids = route.query.ids
       if (ids) params = { ids }

@@ -20,6 +20,16 @@ button, input, select, textarea {
   background: #1a1a2e;
   box-shadow: 0 0 0 3px #2d2048, 0 0 0 5px #1a1030, 0 24px 80px rgba(0,0,0,0.4);
 }
+/* 滚动条美化 */
+.phone-content::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar { width: 4px; }
+.phone-content::-webkit-scrollbar-track,
+.overflow-y-auto::-webkit-scrollbar-track { background: transparent; }
+.phone-content::-webkit-scrollbar-thumb,
+.overflow-y-auto::-webkit-scrollbar-thumb { background: #d4c0f0; border-radius: 2px; }
+.dark .phone-content::-webkit-scrollbar-thumb,
+.dark .overflow-y-auto::-webkit-scrollbar-thumb { background: #3a3050; }
+
 .dark .phone-content { background: #1a1a2e; color: #e0ddf0; }
 .dark .phone-statusbar { background: #1a1a2e; color: #e0ddf0; }
 /* 编辑器在暗黑模式下 */

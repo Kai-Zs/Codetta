@@ -1,21 +1,28 @@
 <template>
   <Teleport to="body">
-    <Transition enter-active-class="transition-opacity duration-200" leave-active-class="transition-opacity duration-150"
-      enter-from-class="opacity-0" leave-to-class="opacity-0">
-      <div v-if="open" class="fixed inset-0 z-50 flex items-end justify-center bg-black/40" @click.self="$emit('close')">
-        <div class="bg-white dark:bg-gray-800 rounded-t-2xl px-6 py-6 w-full max-w-sm">
-          <h3 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-4">答题卡</h3>
-          <div class="flex flex-wrap gap-2 max-h-64 overflow-y-auto">
-            <button v-for="item in items" :key="item.id" @click="$emit('jump', item.id)"
-              :class="[
-                'w-8 h-8 rounded-full text-xs font-medium transition',
-                item.id === currentId ? 'ring-2 ring-purple ring-offset-1 dark:ring-offset-gray-800' : '',
-                item.status === 'correct' ? 'bg-green text-white' :
-                item.status === 'incorrect' || item.status === 'partial' ? 'bg-red-400 text-white' :
-                'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
-              ]">
-              {{ item.label }}
-            </button>
+    <Transition enter-active-class="transition duration-200 ease-out" leave-active-class="transition duration-150 ease-in"
+      enter-from-class="opacity-0 scale-90" leave-to-class="opacity-0 scale-95">
+      <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" @click.self="$emit('close')">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl px-5 py-5 w-72 shadow-xl" style="transition: opacity 0.2s ease-out, transform 0.2s ease-out">
+          <h3 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-4 text-center">答题卡</h3>
+          <div class="max-h-72 overflow-y-auto">
+            <template v-for="(group, ch, idx) in groupedItems" :key="ch">
+              <div v-if="idx > 0" class="border-t border-gray-100 dark:border-gray-700 my-3"></div>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mb-2">第{{ ch }}章</p>
+              <div class="flex flex-wrap gap-1.5">
+                <button v-for="item in group" :key="item.id" @click="$emit('jump', item.id)"
+                  :class="[
+                    'w-6 h-6 rounded-full text-[10px] font-medium transition flex items-center justify-center',
+                    item.id === currentId ? 'ring-2 ring-purple ring-offset-1 dark:ring-offset-gray-800' : '',
+                    item.status === 'correct' ? 'bg-green text-white' :
+                    item.status === 'incorrect' || item.status === 'partial' ? 'bg-red-400 text-white' :
+                    'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                  ]"
+                  :title="item.label">
+                  <span class="leading-none">{{ item.label.split('.')[1] }}</span>
+                </button>
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -24,6 +31,18 @@
 </template>
 
 <script setup>
-defineProps({ open: Boolean, items: Array, currentId: [Number, null] })
+import { computed } from 'vue'
+
+const props = defineProps({ open: Boolean, items: Array, currentId: [Number, null] })
 defineEmits(['close', 'jump'])
+
+const groupedItems = computed(() => {
+  const groups = {}
+  for (const item of props.items || []) {
+    const ch = item.chapter || '?'
+    if (!groups[ch]) groups[ch] = []
+    groups[ch].push(item)
+  }
+  return groups
+})
 </script>
