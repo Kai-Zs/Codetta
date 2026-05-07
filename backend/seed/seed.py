@@ -117,6 +117,7 @@ def parse_prog_html(path):
         code_html = tds[4]
         template_parts = []
         answer_parts = []
+        full_parts = []  # 按原始顺序收集所有片段，用于生成完整代码
         # 按 font10 标签分割（font 和 class 可能跨行）
         parts = re.split(r'(<font[^>]*class="font10"[^>]*>.*?</font>)', code_html, flags=re.DOTALL)
         for part in parts:
@@ -125,6 +126,7 @@ def parse_prog_html(path):
                 answer_parts.append(m.group(1))
             else:
                 template_parts.append(part)
+            full_parts.append(part)
 
         def clean_html(s):
             s = re.sub(r'<br\s*/?>', '\n', s)
@@ -138,6 +140,7 @@ def parse_prog_html(path):
         prog_map[qn] = {
             "template": clean_html("".join(template_parts)),
             "answer_code": clean_html("".join(answer_parts)),
+            "full_code": clean_html("".join(full_parts)),
         }
     return prog_map
 
@@ -210,7 +213,7 @@ def seed_questions(db):
         elif qtype == "编程题":
             prog_info = prog_map.get(q_number, {})
             template = prog_info.get("template", "")
-            answer_code = prog_info.get("answer_code", "")
+            answer_code = prog_info.get("full_code", "")  # 完整代码（模板+答案）
             if not raw_answer.strip() and not answer_code:
                 is_active = 0
                 skipped.append(f"{q_number}: 编程题无答案，标记为停用")
