@@ -8,3 +8,11 @@ data/
 node_modules/
 dist/
 .claude/
+scripts/debug_verify.py
+scripts/ui_audit.py
+scripts/ui_audit2.py
+scripts/verify_design.py
+docs/superpowers/specs/design_review_report.md
+docs/superpowers/specs/ui_audit_result.json
+docs/superpowers/specs/ui_design_review_final.md
+docs/superpowers/specs/verification_result.json
