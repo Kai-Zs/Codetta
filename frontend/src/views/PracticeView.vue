@@ -28,6 +28,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import api from '../api'
 import { usePracticeStore } from '../stores/practice'
 import { useSettingsStore } from '../stores/settings'
@@ -60,7 +61,37 @@ const sheetItems = computed(() => questions.value.map((q, i) => ({ id: q.id, lab
 
 onMounted(async () => {
   loading.value = true
-  const { data } = await api.get('/questions', { params: { per: 618 } })
+  const route = useRoute()
+
+  // 根据路由设置模式
+  if (route.path.includes('/random')) {
+    store.setMode('random')
+  } else if (route.path.includes('/wrong')) {
+    store.setMode('wrong')
+  } else {
+    store.setMode('sequential')
+  }
+
+  // 错题重做：根据 ids 参数加载特定题目
+  if (route.query.ids) {
+    const ids = route.query.ids.split(',').map(Number)
+    questions.value = await Promise.all(ids.map(async (id, i) => {
+      const { data } = await api.get(`/questions/${id}`)
+      return { id, q_number: data.q_number, type: data.type, title: data.title }
+    }))
+    if (questions.value.length) question.value = await store.fetchQuestion(questions.value[0].id)
+    loading.value = false
+    return
+  }
+
+  // 构造 API 请求参数
+  const params = { per: 1000 }
+  if (route.query.type) {
+    params.type = Array.isArray(route.query.type) ? route.query.type.join(',') : route.query.type
+  }
+  if (route.query.chapter) params.chapter = route.query.chapter
+
+  const { data } = await api.get('/questions', { params })
   questions.value = data.items
   if (questions.value.length) question.value = await store.fetchQuestion(questions.value[0].id)
   loading.value = false
