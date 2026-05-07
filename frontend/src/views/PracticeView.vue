@@ -23,6 +23,7 @@
     </footer>
     <BottomDisclaimer />
     <AnswerSheet :open="showSheet" :items="sheetItems" :currentId="question?.id" @close="showSheet=false" @jump="jumpTo" />
+    <ProgModeModal :open="showProgModeModal" @close="showProgModeModal=false" />
   </div>
 </template>
 
@@ -32,6 +33,7 @@ import { useRoute } from 'vue-router'
 import api from '../api'
 import { usePracticeStore } from '../stores/practice'
 import { useSettingsStore } from '../stores/settings'
+import { useAuthStore } from '../stores/auth'
 import BottomDisclaimer from '../components/layout/BottomDisclaimer.vue'
 import LoadingSpinner from '../components/common/LoadingSpinner.vue'
 import AnswerSheet from '../components/common/AnswerSheet.vue'
@@ -40,10 +42,13 @@ import TrueFalse from '../components/practice/TrueFalse.vue'
 import FillBlank from '../components/practice/FillBlank.vue'
 import CodeWrite from '../components/practice/CodeWrite.vue'
 import CodeReview from '../components/practice/CodeReview.vue'
+import ProgModeModal from '../components/common/ProgModeModal.vue'
 
 const store = usePracticeStore()
 const settings = useSettingsStore()
+const auth = useAuthStore()
 const question = ref(null), loading = ref(false), submitted = ref(false)
+const showProgModeModal = ref(false)
 const answerRef = ref(null), showSheet = ref(false)
 const questions = ref([]), questionIndex = ref(0)
 
@@ -100,7 +105,10 @@ onMounted(async () => {
 function handleSubmit() { answerRef.value?.doSubmit?.() }
 function nextQuestion() { if (hasNext.value) { questionIndex.value++; loadCurrent(); submitted.value = false } }
 function prevQuestion() { if (hasPrev.value) { questionIndex.value--; loadCurrent(); submitted.value = false } }
-async function loadCurrent() { loading.value = true; question.value = await store.fetchQuestion(questions.value[questionIndex.value].id); loading.value = false }
+async function loadCurrent() {
+  loading.value = true; question.value = await store.fetchQuestion(questions.value[questionIndex.value].id); loading.value = false
+  if (question.value?.type === '编程题' && auth.needsSetup) showProgModeModal.value = true
+}
 async function jumpTo(id) { questionIndex.value = questions.value.findIndex(q => q.id === id); loadCurrent(); showSheet.value = false; submitted.value = false }
 async function onSubmit(result) {
   await store.submitAnswer({

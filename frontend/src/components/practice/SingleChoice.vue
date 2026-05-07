@@ -20,6 +20,7 @@ const options = computed(() => JSON.parse(props.question.options || '[]'))
 const correctIdx = computed(() => options.value.findIndex(o => o.startsWith(props.question.answer)))
 function select(i) { if (!submitted.value) selected.value = i }
 function doSubmit() {
+  if (selected.value === null) return
   submitted.value = true
   emit('submit', { answer: String.fromCharCode(65 + selected.value), isCorrect: selected.value === correctIdx.value })
 }

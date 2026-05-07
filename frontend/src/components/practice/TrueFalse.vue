@@ -18,6 +18,7 @@ const emit = defineEmits(['submit'])
 const answer = ref(null), submitted = ref(false)
 function choose(v) { if (!submitted.value) answer.value = v }
 function doSubmit() {
+  if (answer.value === null) return
   submitted.value = true
   emit('submit', { answer: answer.value, isCorrect: answer.value === props.question.answer })
 }

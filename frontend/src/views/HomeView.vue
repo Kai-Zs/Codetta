@@ -54,18 +54,20 @@
 import { ref, onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useSettingsStore } from '../stores/settings'
 import api from '../api'
 import BottomDisclaimer from '../components/layout/BottomDisclaimer.vue'
 import SettingsPanel from '../components/common/SettingsPanel.vue'
 import FilterModal from '../components/common/FilterModal.vue'
 import ConfirmDialog from '../components/common/ConfirmDialog.vue'
 
-const router = useRouter(), auth = useAuthStore()
+const router = useRouter(), auth = useAuthStore(), settings = useSettingsStore()
 const showMenu = ref(false), showSettings = ref(false), showFilter = ref(false), confirmClear = ref(false)
 const progress = reactive({ done: 0, total: 618, accuracy: 0 })
 
 onMounted(async () => {
   await auth.fetchMe()
+  settings.init()
   try { const { data } = await api.get('/progress'); Object.assign(progress, data) } catch {}
 })
 
