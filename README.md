@@ -48,6 +48,10 @@ practice/
 - 编程题：HTML 表格解析，template（纯黑骨架）+ answer_code（完整代码）
 - 8.33-8.36 无答案停用
 
+### 许可证
+
+GPL v3
+
 ## 快速开始
 
 ```bash
