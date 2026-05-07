@@ -65,15 +65,26 @@ def load_roster_rows(path):
 
 
 def clean_dollar(val):
+    """清洗内容/标题/备注字段中的 $ 转义残留"""
     if not isinstance(val, str):
         return val
     val = re.sub(r"'?\$'?w\+'?", "'w+'", val)
-    val = val.replace("True$False", "True or False")
     val = re.sub(r"'?\$-inf'?", "-inf", val)
     val = re.sub(r"'?\+inf\$'?", "+inf", val)
     val = val.replace("$\n", "\n").replace("\n$", "\n")
     val = re.sub(r"\$\$+", "", val)
+    val = re.sub(r"^'?\$'?", "", val)
+    val = re.sub(r"'?\$'?$", "", val)
     return val.strip()
+
+
+def clean_answer_dollar(val):
+    """仅处理答案中确定是 Excel 转义的 $（如 $True → True），保留填空分隔符 $"""
+    if not isinstance(val, str):
+        return val
+    val = val.strip()
+    val = val.lstrip("$")
+    return val
 
 
 def parse_prog_html(path):
@@ -117,12 +128,26 @@ def parse_prog_html(path):
 
 
 def parse_single_choice_options(content):
-    """从题干文本中提取 A/B/C/D 选项"""
+    """从题干文本中提取 A/B/C/D 选项，选项可能跨行"""
+    # 用 A./B./C./D. 或 A、/B、/C、/D、 作为分隔标记
     pattern = r'([A-D])[.、．]\s*(.+?)(?=\n?[A-D][.、．]|\Z)'
     matches = re.findall(pattern, content, re.DOTALL)
     if matches:
         return [f"{m[0]}. {m[1].strip()}" for m in matches]
     return []
+
+
+def match_answer_to_option(raw_answer, options):
+    """去除选项的 A. 前缀后与答案精确比对，返回匹配的字母，否则 None"""
+    ans_text = raw_answer.strip().lstrip("$")
+    for opt_text in options:
+        # 取选项文本（去掉 "A. " 前缀）
+        m = re.match(r'[A-D][.、．]\s*(.+)', opt_text, re.DOTALL)
+        if m:
+            opt_body = m.group(1).strip()
+            if ans_text == opt_body:
+                return opt_text[0]
+    return None
 
 
 def seed_questions(db):
@@ -135,7 +160,7 @@ def seed_questions(db):
         qtype = row["type"]
         title = clean_dollar(row["title"])
         content = clean_dollar(row["content"])
-        raw_answer = clean_dollar(row["answer"])
+        raw_answer = row["answer"]
         note = clean_dollar(row["note"])
         chapter = q_number.split(".")[0] if "." in q_number else q_number
         options = None
@@ -144,38 +169,34 @@ def seed_questions(db):
         answer_code = None
         is_active = 1
 
-        if qtype == "单选":
+        if qtype == "单选题":
+            raw_answer = clean_answer_dollar(raw_answer)
             options = parse_single_choice_options(content)
             if options:
-                answer_letter = None
-                ans_text = raw_answer.strip()
-                for opt_text in options:
-                    opt_body = opt_text.split(".", 1)[-1].strip()
-                    if ans_text == opt_body:
-                        answer_letter = opt_text[0]
-                        break
+                answer_letter = match_answer_to_option(raw_answer, options)
                 if answer_letter:
                     raw_answer = answer_letter
                 else:
-                    skipped.append(f"{q_number}: 单选答案无法匹配选项 [{raw_answer[:50]}]")
+                    skipped.append(f"{q_number}: 单选答案匹配失败，答案=[{raw_answer[:80]}]，需手动处理")
+            else:
+                skipped.append(f"{q_number}: 单选未解析到选项，需手动处理")
 
-        elif qtype == "判断":
+        elif qtype == "判断题":
+            raw_answer = raw_answer.strip()
             if raw_answer not in ("正确", "错误"):
-                skipped.append(f"{q_number}: 判断题答案异常 [{raw_answer[:50]}]")
+                skipped.append(f"{q_number}: 判断题答案异常 [{raw_answer[:50]}]，需手动处理")
 
-        elif qtype == "填空":
+        elif qtype == "填空题":
             answer_parts_list = [p.strip() for p in raw_answer.split("$") if p.strip()]
             if not answer_parts_list:
-                answer_parts_list = [raw_answer]
-            if raw_answer.count("$") + 1 != len(answer_parts_list):
-                skipped.append(f"{q_number}: 填空 $ 数量({raw_answer.count('$')})与空数({len(answer_parts_list)})不匹配")
+                answer_parts_list = [raw_answer.strip()]
             answer_parts = json.dumps(answer_parts_list, ensure_ascii=False)
 
-        elif qtype == "编程":
+        elif qtype == "编程题":
             prog_info = prog_map.get(q_number, {})
             template = prog_info.get("template", "")
             answer_code = prog_info.get("answer_code", "")
-            if not raw_answer and not answer_code:
+            if not raw_answer.strip() and not answer_code:
                 is_active = 0
                 skipped.append(f"{q_number}: 编程题无答案，标记为停用")
 
@@ -186,8 +207,11 @@ def seed_questions(db):
             INSERT OR REPLACE INTO questions (q_number, chapter, type, title, content, options,
                                               answer, answer_parts, template, answer_code, note, is_active)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (q_number, chapter, qtype, title, content, options,
-              raw_answer, answer_parts, template, answer_code, note, is_active))
+        """, (q_number, chapter, qtype, title, content,
+              json.dumps(options, ensure_ascii=False) if options else None,
+              raw_answer,
+              answer_parts,
+              template, answer_code, note, is_active))
 
     return skipped
 
