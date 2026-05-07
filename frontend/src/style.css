@@ -56,14 +56,20 @@
 
 /* === 代码编辑器浮层 === */
 .editor-panel {
+  position: fixed;
+  top: 50%;
+  left: calc(50% + 210px);
+  transform: translateY(-50%);
   width: 480px;
   max-width: 40vw;
+  max-height: 85vh;
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 16px 60px rgba(100, 40, 180, 0.12);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  z-index: 100;
 }
 
 .editor-header {
