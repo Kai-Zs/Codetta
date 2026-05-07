@@ -28,6 +28,7 @@ class ProgressSubmit(BaseModel):
     user_answer: str
     mode: str = "sequential"
     prog_submit_type: str | None = None
+    ai_feedback: str | None = None
 
 
 class RemoveWrongRequest(BaseModel):

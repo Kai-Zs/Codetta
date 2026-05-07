@@ -2,7 +2,7 @@
 import json
 import re
 import httpx
-from ..database import get_conn
+from ..database import get_db
 from ..config import DEEPSEEK_API_KEY, DEEPSEEK_TIMEOUT
 
 
@@ -41,13 +41,12 @@ def parse_deepseek(raw: str) -> dict:
 
 
 def judge_code(question_id: int, user_code: str) -> dict:
-    conn = get_conn()
-    row = conn.execute("SELECT content, answer_code FROM questions WHERE id=?", (question_id,)).fetchone()
-    conn.close()
-    if not row:
-        raise ValueError("题目不存在")
+    with get_db() as db:
+        row = db.execute("SELECT content, answer_code FROM questions WHERE id=?", (question_id,)).fetchone()
+        if not row:
+            raise ValueError("题目不存在")
 
-    prompt = JUDGE_PROMPT.format(content=row["content"], answer=row["answer_code"] or "", user_code=user_code)
+        prompt = JUDGE_PROMPT.format(content=row["content"], answer=row["answer_code"] or "", user_code=user_code)
 
     with httpx.Client(timeout=DEEPSEEK_TIMEOUT) as client:
         resp = client.post(

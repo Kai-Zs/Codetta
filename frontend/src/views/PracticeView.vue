@@ -72,7 +72,10 @@ const isFromWrong = computed(() => route.path.includes('/wrong'))
 function backToWrong() { router.push('/wrong') }
 
 onMounted(async () => {
-  loading.value = true
+  try {
+    loading.value = true
+    await auth.fetchMe()
+    settings.init()
 
   // 根据路由设置模式
   if (route.path.includes('/random')) {
@@ -105,10 +108,14 @@ onMounted(async () => {
   const { data } = await api.get('/questions', { params })
   questions.value = data.items
   if (questions.value.length) question.value = await store.fetchQuestion(questions.value[0].id)
-  loading.value = false
+  } catch (e) {
+    console.error('PracticeView mount error:', e)
+  } finally {
+    loading.value = false
+  }
 })
 
-function handleSubmit() { answerRef.value?.doSubmit?.() }
+function handleSubmit() { answerRef.value?.doSubmit?.(); submitted.value = true }
 function nextQuestion() { if (hasNext.value) { questionIndex.value++; loadCurrent(); submitted.value = false } }
 function prevQuestion() { if (hasPrev.value) { questionIndex.value--; loadCurrent(); submitted.value = false } }
 async function loadCurrent() {
@@ -122,7 +129,8 @@ async function onSubmit(result) {
     question_id: question.value.id,
     answer_status: result.isCorrect ? 'correct' : (result.partial ? 'partial' : 'incorrect'),
     user_answer: JSON.stringify(result),
-    mode: store.mode
+    mode: store.mode,
+    ai_feedback: result.aiFeedback ? JSON.stringify(result.aiFeedback) : null,
   })
 }
 </script>
