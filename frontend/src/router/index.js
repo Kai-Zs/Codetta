@@ -8,7 +8,7 @@ const routes = [
   { path: '/practice/wrong', name: 'PracticeWrong', component: () => import('../views/PracticeView.vue'), meta: { auth: true } },
   { path: '/wrong', name: 'Wrong', component: () => import('../views/WrongBooks.vue'), meta: { auth: true } },
   { path: '/wrong/:qid', name: 'WrongDetail', component: () => import('../views/PracticeView.vue'), meta: { auth: true, readonly: true } },
-  { path: '/admin/reset-pin', name: 'AdminReset', component: () => import('../views/AdminResetPin.vue') },
+  { path: '/admin/reset-pin', name: 'AdminReset', component: () => import('../views/AdminResetPin.vue'), meta: { auth: true } },
 ]
 
 const router = createRouter({ history: createWebHistory(), routes })
