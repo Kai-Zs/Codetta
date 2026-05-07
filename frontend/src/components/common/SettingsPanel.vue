@@ -1,9 +1,9 @@
 <template>
   <Teleport to="body">
-    <Transition enter-active-class="transition-opacity duration-200" leave-active-class="transition-opacity duration-150"
-      enter-from-class="opacity-0" leave-to-class="opacity-0">
-      <div v-if="open" class="fixed inset-0 z-50 flex items-end justify-center bg-black/40" @click.self="$emit('close')">
-        <div class="bg-white dark:bg-gray-800 rounded-t-2xl px-6 py-6 w-full max-w-sm">
+    <Transition enter-active-class="transition duration-200 ease-out" leave-active-class="transition duration-150 ease-in"
+      enter-from-class="opacity-0 scale-90" leave-to-class="opacity-0 scale-95">
+      <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" @click.self="$emit('close')">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl px-6 py-6 w-72 shadow-xl" style="transition: opacity 0.2s ease-out, transform 0.2s ease-out">
           <h3 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-6">设置</h3>
           <div class="mb-6">
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">编程题模式</p>
