@@ -20,27 +20,46 @@ EXCEL_ROSTER = os.path.join(ROOT, "data", "2544名单.xlsx")
 HTML_PROG = os.path.join(ROOT, "data", "编程题抽出来的题库.htm")
 
 
+def format_q_number(cell):
+    """按单元格数字格式还原真实题号（例：float 1.1 + fmt 0.00 → "1.10"）"""
+    val = cell.value
+    if not isinstance(val, float):
+        return str(val).strip() if val is not None else ""
+    fmt = cell.number_format or "General"
+    if fmt == "General":
+        return str(val)
+    if "." in fmt:
+        decimals = len(fmt.rsplit(".", 1)[1])
+        return f"{val:.{decimals}f}"
+    return str(val)
+
+
 def load_qa_rows(path):
     """返回清洗后的题目行，跳过注释行和章节标题行"""
     wb = openpyxl.load_workbook(path)
     ws = wb.active
-    rows = list(ws.iter_rows(values_only=True))
-    if len(rows) < 2:
+    if ws.max_row < 3:
         return []
     result = []
-    for row in rows[2:]:
-        if not row[0] or str(row[0]).strip() == "":
+    for r in range(3, ws.max_row + 1):
+        cell_qn = ws.cell(row=r, column=1)
+        if cell_qn.value is None:
             continue
-        qn = str(row[0]).strip()
-        if qn.startswith("第") and "章" in qn:
+        qn = format_q_number(cell_qn)
+        if not qn or qn.startswith("第") and "章" in qn:
             continue
+
+        def cell_str(col):
+            v = ws.cell(row=r, column=col).value
+            return str(v).strip() if v is not None else ""
+
         result.append({
             "q_number": qn,
-            "type": str(row[1]).strip() if row[1] else "",
-            "title": str(row[2]).strip() if row[2] else "",
-            "content": str(row[3]).strip() if row[3] else "",
-            "answer": str(row[4]).strip() if row[4] else "",
-            "note": str(row[5]).strip() if row[5] else "",
+            "type": cell_str(2),
+            "title": cell_str(3),
+            "content": cell_str(4),
+            "answer": cell_str(5),
+            "note": cell_str(6),
         })
     return result
 
