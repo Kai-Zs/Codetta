@@ -125,12 +125,16 @@ async function loadCurrent() {
 }
 async function jumpTo(id) { questionIndex.value = questions.value.findIndex(q => q.id === id); loadCurrent(); showSheet.value = false; submitted.value = false }
 async function onSubmit(result) {
-  await store.submitAnswer({
-    question_id: question.value.id,
-    answer_status: result.isCorrect ? 'correct' : (result.partial ? 'partial' : 'incorrect'),
-    user_answer: JSON.stringify(result),
-    mode: store.mode,
-    ai_feedback: result.aiFeedback ? JSON.stringify(result.aiFeedback) : null,
-  })
+  try {
+    await store.submitAnswer({
+      question_id: question.value.id,
+      answer_status: result.isCorrect ? 'correct' : (result.partial ? 'partial' : 'incorrect'),
+      user_answer: JSON.stringify(result),
+      mode: store.mode,
+      ai_feedback: result.aiFeedback ? JSON.stringify(result.aiFeedback) : null,
+    })
+  } catch (e) {
+    console.error('提交失败', e)
+  }
 }
 </script>

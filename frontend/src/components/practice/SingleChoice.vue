@@ -17,7 +17,10 @@ const props = defineProps({ question: Object })
 const emit = defineEmits(['submit'])
 const selected = ref(null), submitted = ref(false)
 const options = computed(() => JSON.parse(props.question.options || '[]'))
-const correctIdx = computed(() => options.value.findIndex(o => o.startsWith(props.question.answer)))
+const correctIdx = computed(() => {
+  if (!props.question.answer) return -1
+  return options.value.findIndex(o => o.startsWith(props.question.answer))
+})
 function select(i) { if (!submitted.value) selected.value = i }
 function doSubmit() {
   if (selected.value === null) return

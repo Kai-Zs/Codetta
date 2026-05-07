@@ -42,7 +42,7 @@ def submit_progress(user_id: int, data: dict) -> dict:
 
 def get_wrong(user_id: int, type: str = "", chapter: str = "", page: int = 1, per: int = 20) -> dict:
     with get_db() as db:
-        where = ["p.user_id=? AND p.answer_status IN ('incorrect','partial') AND p.removed_from_wrong=0"]
+        where = ["p.user_id=? AND p.answer_status IN ('incorrect','partial') AND p.removed_from_wrong=0 AND q.is_active=1"]
         params = [user_id]
         if type:
             where.append("q.type=?")

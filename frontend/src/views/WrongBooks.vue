@@ -64,6 +64,6 @@ function reload() { store.pagination.page = 1; store.fetchList() }
 function prevPage() { store.pagination.page--; store.fetchList() }
 function nextPage() { store.pagination.page++; store.fetchList() }
 async function doRemove() { await store.removeFromWrong(store.selected); store.selected = []; store.fetchList() }
-async function doExport() { const blob = await store.exportExcel(); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'wrong_questions.xlsx'; a.click() }
+async function doExport() { const blob = await store.exportExcel(); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'wrong_questions.xlsx'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 100) }
 function doRePractice() { router.push({ path: '/practice/wrong', query: { ids: store.selected.join(',') } }) }
 </script>
