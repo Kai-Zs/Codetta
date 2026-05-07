@@ -18,3 +18,7 @@ def judge(body: JudgeRequest, user_id: int = Depends(get_user_id)):
         raise HTTPException(408, "判题超时，请手动判断")
     except ValueError as e:
         raise HTTPException(400, str(e))
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(500, f"判题服务异常: {str(e)[:100]}")

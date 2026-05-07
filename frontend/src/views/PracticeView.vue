@@ -17,9 +17,10 @@
       <component v-else-if="question" :is="typeComp" :question="question" ref="answerRef" @submit="onSubmit" />
     </div>
     <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-3 flex gap-3">
-      <button @click="prevQuestion" :disabled="!hasPrev" class="px-3 py-2 border border-gray-200 rounded-lg text-sm disabled:opacity-30">上一题</button>
-      <button @click="handleSubmit" :disabled="submitted" class="flex-1 py-2 bg-purple text-white rounded-lg text-sm font-medium disabled:opacity-40">提交</button>
-      <button @click="nextQuestion" :disabled="!hasNext" class="px-3 py-2 border border-gray-200 rounded-lg text-sm disabled:opacity-30">下一题</button>
+      <button v-if="!isReadonly" @click="prevQuestion" :disabled="!hasPrev" class="px-3 py-2 border border-gray-200 rounded-lg text-sm disabled:opacity-30">上一题</button>
+      <button v-if="!isReadonly" @click="handleSubmit" :disabled="submitted" class="flex-1 py-2 bg-purple text-white rounded-lg text-sm font-medium disabled:opacity-40">提交</button>
+      <button v-if="!isReadonly" @click="nextQuestion" :disabled="!hasNext" class="px-3 py-2 border border-gray-200 rounded-lg text-sm disabled:opacity-30">下一题</button>
+      <button v-if="!hasNext && isFromWrong && !isReadonly" @click="backToWrong" class="flex-1 py-2 bg-purple text-white rounded-lg text-sm font-medium">返回错题本</button>
     </footer>
     <BottomDisclaimer />
     <AnswerSheet :open="showSheet" :items="sheetItems" :currentId="question?.id" @close="showSheet=false" @jump="jumpTo" />
@@ -29,7 +30,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import api from '../api'
 import { usePracticeStore } from '../stores/practice'
 import { useSettingsStore } from '../stores/settings'
@@ -47,6 +48,8 @@ import ProgModeModal from '../components/common/ProgModeModal.vue'
 const store = usePracticeStore()
 const settings = useSettingsStore()
 const auth = useAuthStore()
+const route = useRoute()
+const router = useRouter()
 const question = ref(null), loading = ref(false), submitted = ref(false)
 const showProgModeModal = ref(false)
 const answerRef = ref(null), showSheet = ref(false)
@@ -63,10 +66,13 @@ const progressPercent = computed(() => questions.value.length ? (questionIndex.v
 const hasPrev = computed(() => questionIndex.value > 0)
 const hasNext = computed(() => questionIndex.value < questions.value.length - 1)
 const sheetItems = computed(() => questions.value.map((q, i) => ({ id: q.id, label: i + 1, status: null })))
+const isReadonly = computed(() => route.meta.readonly === true)
+const isFromWrong = computed(() => route.path.includes('/wrong'))
+
+function backToWrong() { router.push('/wrong') }
 
 onMounted(async () => {
   loading.value = true
-  const route = useRoute()
 
   // 根据路由设置模式
   if (route.path.includes('/random')) {
@@ -107,6 +113,7 @@ function nextQuestion() { if (hasNext.value) { questionIndex.value++; loadCurren
 function prevQuestion() { if (hasPrev.value) { questionIndex.value--; loadCurrent(); submitted.value = false } }
 async function loadCurrent() {
   loading.value = true; question.value = await store.fetchQuestion(questions.value[questionIndex.value].id); loading.value = false
+  if (isReadonly.value) submitted.value = true
   if (question.value?.type === '编程题' && auth.needsSetup) showProgModeModal.value = true
 }
 async function jumpTo(id) { questionIndex.value = questions.value.findIndex(q => q.id === id); loadCurrent(); showSheet.value = false; submitted.value = false }
