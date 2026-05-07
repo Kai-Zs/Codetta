@@ -2,56 +2,56 @@
   <div class="flex flex-col items-center justify-center min-h-full px-6 py-12">
     <!-- 标题 -->
     <h1 class="text-2xl font-[Georgia] text-purple tracking-widest mb-1">练笔小筑</h1>
-    <p class="text-xs text-gray-400 tracking-widest mb-12">一题一阶 · 拾级而上</p>
+    <p class="text-xs text-gray-400 dark:text-gray-500 tracking-widest mb-12">一题一阶 · 拾级而上</p>
 
     <!-- 阶段1：输入学号 -->
     <template v-if="stage===1">
-      <p class="text-sm text-gray-500 mb-4">输入学号以继续</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">输入学号以继续</p>
       <input
         v-model="sid"
         maxlength="10"
         placeholder="学号"
-        class="w-full px-4 py-3 border border-gray-200 rounded-lg text-center text-lg tracking-widest focus:outline-none focus:border-purple" />
+        class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-center text-lg dark:text-gray-200 tracking-widest focus:outline-none focus:border-purple" />
       <button @click="doLogin" :disabled="sid.length!==10"
         class="w-full mt-4 py-3 bg-purple text-white rounded-lg disabled:opacity-40 font-medium">确认</button>
     </template>
 
     <!-- 阶段2：输入 PIN -->
     <template v-if="stage===2">
-      <p class="text-sm text-gray-500 mb-4">你好，{{ userName }}</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">你好，{{ userName }}</p>
       <input
         v-model="pin"
         type="password"
         maxlength="4"
         placeholder="PIN"
-        class="w-full px-4 py-3 border border-gray-200 rounded-lg text-center text-lg tracking-widest focus:outline-none focus:border-purple" />
+        class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-center text-lg dark:text-gray-200 tracking-widest focus:outline-none focus:border-purple" />
       <button @click="doVerify" :disabled="pin.length!==4"
         class="w-full mt-4 py-3 bg-purple text-white rounded-lg disabled:opacity-40 font-medium">确认</button>
-      <p class="text-center text-xs text-gray-400 mt-4">忘记PIN？请联系作者</p>
+      <p class="text-center text-xs text-gray-400 dark:text-gray-500 mt-4">忘记PIN？请联系作者</p>
     </template>
 
     <!-- 阶段3：设置 PIN -->
     <template v-if="stage===3">
-      <p class="text-sm text-gray-500 mb-4">首次登录，请设置 PIN</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">首次登录，请设置 PIN</p>
       <input
         v-model="pin"
         type="password"
         maxlength="4"
         placeholder="设置4位PIN"
-        class="w-full px-4 py-3 border border-gray-200 rounded-lg text-center text-lg tracking-widest focus:outline-none focus:border-purple mb-3" />
+        class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-center text-lg dark:text-gray-200 tracking-widest focus:outline-none focus:border-purple mb-3" />
       <input
         v-model="pin2"
         type="password"
         maxlength="4"
         placeholder="再次输入PIN"
-        class="w-full px-4 py-3 border border-gray-200 rounded-lg text-center text-lg tracking-widest focus:outline-none focus:border-purple" />
+        class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-center text-lg dark:text-gray-200 tracking-widest focus:outline-none focus:border-purple" />
       <p v-if="error" class="text-red-500 text-xs text-center mt-2">{{ error }}</p>
       <button @click="doSetPin" :disabled="pin.length!==4 || pin2.length!==4 || pin!==pin2"
         class="w-full mt-4 py-3 bg-purple text-white rounded-lg disabled:opacity-40 font-medium">设置 PIN</button>
     </template>
 
     <!-- 底部 -->
-    <p class="text-xs text-gray-300 mt-16">Powered by 凯Z闪</p>
+    <p class="text-xs text-gray-300 dark:text-gray-600 mt-16">Powered by 凯Z闪</p>
   </div>
 </template>
 

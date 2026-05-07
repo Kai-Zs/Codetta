@@ -2,10 +2,10 @@
   <div class="flex flex-col min-h-full relative">
     <!-- 顶栏 -->
     <header class="flex justify-between items-center px-3 py-2">
-      <button @click="$router.back()" class="text-gray-400 p-1">
+      <button @click="$router.back()" class="text-gray-400 dark:text-gray-500 p-1">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
       </button>
-      <div class="flex items-center gap-2 text-xs text-gray-400">
+      <div class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
         <span>{{ question?.q_number }}</span>
         <button v-if="!isFromWrong" @click="toggleMode"
           class="text-purple text-xs">{{ store.mode === 'random' ? '切顺序' : '切随机' }}</button>
@@ -21,7 +21,7 @@
     <!-- 翻页 -->
     <div class="flex justify-between px-4 py-1.5">
       <button @click="prevQuestion" :disabled="!hasPrev"
-        class="text-xs text-gray-400 disabled:opacity-30">← 上一题</button>
+        class="text-xs text-gray-400 dark:text-gray-500 disabled:opacity-30">← 上一题</button>
       <button @click="nextQuestion" :disabled="!hasNext"
         class="text-xs text-gray-400 disabled:opacity-30">下一题 →</button>
     </div>
@@ -33,8 +33,8 @@
         <!-- 题型标签 -->
         <span class="inline-block bg-purple/5 text-purple text-xs px-2 py-0.5 rounded mb-3">{{ question.type }}</span>
         <!-- 标题 + 内容 -->
-        <h2 class="text-base font-semibold text-gray-800 mb-2 leading-relaxed">{{ question.title }}</h2>
-        <div class="text-sm text-gray-600 mb-4 leading-relaxed whitespace-pre-wrap" v-html="renderedContent"></div>
+        <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-2 leading-relaxed">{{ question.title }}</h2>
+        <div class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed whitespace-pre-wrap" v-html="renderedContent"></div>
         <!-- 题型组件 -->
         <component
           ref="answerRef"
@@ -67,9 +67,15 @@
     <!-- 底部 -->
     <div class="flex items-center justify-between px-4 pb-2">
       <BottomDisclaimer />
-      <button @click="showSettings = true" class="text-gray-300 hover:text-gray-400 w-4 h-4 ml-4 flex-shrink-0">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-      </button>
+      <div class="flex items-center gap-3 ml-4 flex-shrink-0">
+        <button @click="theme.toggle()" class="w-4 h-4 text-gray-300 dark:text-gray-500 hover:text-gray-400 dark:hover:text-gray-400">
+          <svg v-if="theme.isDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+        <button @click="showSettings = true" class="w-4 h-4 text-gray-300 dark:text-gray-500 hover:text-gray-400 dark:hover:text-gray-400">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3"/><circle cx="4" cy="10" r="2"/><circle cx="12" cy="8" r="2"/><circle cx="20" cy="12" r="2"/></svg>
+        </button>
+      </div>
     </div>
 
     <!-- 答题卡 -->
@@ -97,6 +103,7 @@ import api from '../api'
 import { useAuthStore } from '../stores/auth'
 import { usePracticeStore } from '../stores/practice'
 import { useSettingsStore } from '../stores/settings'
+import { useThemeStore } from '../stores/theme'
 import BottomDisclaimer from '../components/layout/BottomDisclaimer.vue'
 import LoadingSpinner from '../components/common/LoadingSpinner.vue'
 import AnswerSheet from '../components/common/AnswerSheet.vue'
@@ -115,6 +122,7 @@ const router = useRouter()
 const store = usePracticeStore()
 const settings = useSettingsStore()
 const auth = useAuthStore()
+const theme = useThemeStore()
 
 const question = ref(null)
 const questions = ref([])

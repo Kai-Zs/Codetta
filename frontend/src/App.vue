@@ -8,6 +8,10 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import BackgroundLayer from './components/layout/BackgroundLayer.vue'
 import PhoneShell from './components/layout/PhoneShell.vue'
+import { useThemeStore } from './stores/theme'
+
+onMounted(() => { useThemeStore().init() })
 </script>

@@ -1,9 +1,48 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-purple: #7C3AED;
   --color-green: #059669;
   --color-bg: #FAF5FF;
+}
+
+/* === 暗黑模式全局过渡 === */
+*, *::before, *::after {
+  transition: background-color 0.5s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.5s ease;
+}
+
+/* === 暗黑模式 === */
+.dark .phone-shell {
+  background: #1a1a2e;
+  box-shadow: 0 0 0 3px #2d2048, 0 0 0 5px #1a1030, 0 24px 80px rgba(0,0,0,0.4);
+}
+.dark .phone-content { background: #1a1a2e; color: #e0ddf0; }
+.dark .phone-statusbar { background: #1a1a2e; color: #e0ddf0; }
+/* 编辑器在暗黑模式下 */
+.dark .editor-panel { background: #1e1e2e; box-shadow: 0 16px 60px rgba(0,0,0,0.3); }
+.dark .editor-header { border-color: #2a2a3e; color: #e0ddf0; }
+.dark .editor-footer { border-color: #2a2a3e; }
+.dark .editor-area { background: #12121f; color: #c0bce0; }
+
+/* === 背景层 === */
+.bg-layer-root { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.bg-gradient-base {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, #ede0ff 0%, #dce6ff 40%, #ffe4f0 70%, #e8e0ff 100%);
+}
+.dark .bg-gradient-base {
+  background: linear-gradient(135deg, #1a1030 0%, #0f1a2e 40%, #1a0f20 70%, #0f1028 100%);
+}
+.bg-pattern-layer {
+  position: absolute; inset: -100px; opacity: 0.22;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Ccircle cx='28' cy='28' r='2.5' fill='%237c3aed'/%3E%3Cpath d='M8 8l12 12M20 8L8 20' stroke='%23a78bfa' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M48 48l12 12M60 48l-12 12' stroke='%23a78bfa' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: 56px 56px;
+}
+.dark .bg-pattern-layer {
+  opacity: 0.3;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Ccircle cx='28' cy='28' r='2.5' fill='%23a78bfa'/%3E%3Cpath d='M8 8l12 12M20 8L8 20' stroke='%23c4b5fd' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M48 48l12 12M60 48l-12 12' stroke='%23c4b5fd' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
 /* === 动态背景动画 === */
