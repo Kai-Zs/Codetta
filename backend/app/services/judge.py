@@ -1,5 +1,4 @@
 """DeepSeek 判题"""
-import asyncio
 import json
 import re
 import httpx
@@ -41,7 +40,7 @@ def parse_deepseek(raw: str) -> dict:
         return {"is_correct": False, "score": 0, "comment": "AI 判分解析失败，请手动判断"}
 
 
-async def judge_code(question_id: int, user_code: str) -> dict:
+def judge_code(question_id: int, user_code: str) -> dict:
     conn = get_conn()
     row = conn.execute("SELECT content, answer_code FROM questions WHERE id=?", (question_id,)).fetchone()
     conn.close()
@@ -50,8 +49,8 @@ async def judge_code(question_id: int, user_code: str) -> dict:
 
     prompt = JUDGE_PROMPT.format(content=row["content"], answer=row["answer_code"] or "", user_code=user_code)
 
-    async with httpx.AsyncClient(timeout=DEEPSEEK_TIMEOUT) as client:
-        resp = await client.post(
+    with httpx.Client(timeout=DEEPSEEK_TIMEOUT) as client:
+        resp = client.post(
             "https://api.deepseek.com/v1/chat/completions",
             headers={"Authorization": f"Bearer {DEEPSEEK_API_KEY}", "Content-Type": "application/json"},
             json={"model": "deepseek-chat", "messages": [{"role": "user", "content": prompt}], "temperature": 0},
@@ -59,5 +58,8 @@ async def judge_code(question_id: int, user_code: str) -> dict:
     if resp.status_code != 200:
         raise ValueError(f"DeepSeek API 错误: {resp.status_code}")
 
-    raw = resp.json()["choices"][0]["message"]["content"]
+    try:
+        raw = resp.json()["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, TypeError):
+        raise ValueError("DeepSeek 返回格式异常")
     return parse_deepseek(raw)

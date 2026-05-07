@@ -6,7 +6,7 @@ def get_progress(user_id: int) -> dict:
     conn = get_conn()
     total = conn.execute("SELECT COUNT(*) FROM questions WHERE is_active=1").fetchone()[0]
     done_rows = conn.execute(
-        "SELECT question_id, answer_status FROM progress WHERE user_id=? GROUP BY question_id HAVING MAX(rowid)",
+        "SELECT question_id, answer_status FROM progress WHERE rowid IN (SELECT MAX(rowid) FROM progress WHERE user_id=? GROUP BY question_id)",
         (user_id,)
     ).fetchall()
     done = len(done_rows)
