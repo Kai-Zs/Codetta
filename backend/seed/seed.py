@@ -12,9 +12,9 @@ import openpyxl
 from app.database import get_db, init_db
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-EXCEL_QA = os.path.join(ROOT, "题库(622道).xlsx")
-EXCEL_ROSTER = os.path.join(ROOT, "2544名单.xlsx")
-HTML_PROG = os.path.join(ROOT, "编程题抽出来的题库.htm")
+EXCEL_QA = os.path.join(ROOT, "data", "题库(622道).xlsx")
+EXCEL_ROSTER = os.path.join(ROOT, "data", "2544名单.xlsx")
+HTML_PROG = os.path.join(ROOT, "data", "编程题抽出来的题库.htm")
 
 
 def load_workbook_safe(path):
