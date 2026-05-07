@@ -8,6 +8,7 @@ export const usePracticeStore = defineStore('practice', {
     filters: { type: [], chapter: '', status: 'all' },
     answerSheet: [],
     loading: false,
+    showEditor: false,
   }),
   actions: {
     async fetchQuestion(id) {
