@@ -1,5 +1,8 @@
 """
 将 题库(622道).xlsx 和 2544名单.xlsx 导入 SQLite 数据库。
+
+Excel 结构: row[0]=注释, row[1]=表头, row[2:]=数据(含章节标题行)
+列: 题号 | 题型 | 标题 | 题目 | 答案 | 备注
 """
 import json
 import os
@@ -17,36 +20,55 @@ EXCEL_ROSTER = os.path.join(ROOT, "data", "2544名单.xlsx")
 HTML_PROG = os.path.join(ROOT, "data", "编程题抽出来的题库.htm")
 
 
-def load_workbook_safe(path):
+def load_qa_rows(path):
+    """返回清洗后的题目行，跳过注释行和章节标题行"""
     wb = openpyxl.load_workbook(path)
     ws = wb.active
     rows = list(ws.iter_rows(values_only=True))
-    if not rows:
+    if len(rows) < 2:
         return []
-    header = [str(h) if h else "" for h in rows[0]]
-    data = []
-    for row in rows[1:]:
-        d = {header[i]: (str(row[i]) if row[i] is not None else "") for i in range(len(header))}
-        data.append(d)
-    return data
+    result = []
+    for row in rows[2:]:
+        if not row[0] or str(row[0]).strip() == "":
+            continue
+        qn = str(row[0]).strip()
+        if qn.startswith("第") and "章" in qn:
+            continue
+        result.append({
+            "q_number": qn,
+            "type": str(row[1]).strip() if row[1] else "",
+            "title": str(row[2]).strip() if row[2] else "",
+            "content": str(row[3]).strip() if row[3] else "",
+            "answer": str(row[4]).strip() if row[4] else "",
+            "note": str(row[5]).strip() if row[5] else "",
+        })
+    return result
+
+
+def load_roster_rows(path):
+    wb = openpyxl.load_workbook(path)
+    ws = wb.active
+    rows = list(ws.iter_rows(values_only=True))
+    sids = []
+    for row in rows:
+        for cell in row:
+            if cell is not None:
+                val = str(cell).strip()
+                if val.isdigit() and len(val) == 10:
+                    sids.append(val)
+    return sids
 
 
 def clean_dollar(val):
     if not isinstance(val, str):
         return val
-    val = val.replace("‘$’", "‘’")  # '$'w' -> 'w'
     val = re.sub(r"'?\$'?w\+'?", "'w+'", val)
-    val = val.replace("'True$False'", "True or False")
+    val = val.replace("True$False", "True or False")
     val = re.sub(r"'?\$-inf'?", "-inf", val)
     val = re.sub(r"'?\+inf\$'?", "+inf", val)
-    val = re.sub(r"'?\$([.,;:，。；：])'?", r"\1", val)
-    val = val.replace("$\n", "\n")
-    val = val.replace("\n$", "\n")
-    val = re.sub(r"'?\$'?$", "", val)
-    val = re.sub(r"^'?\$'?", "", val)
+    val = val.replace("$\n", "\n").replace("\n$", "\n")
     val = re.sub(r"\$\$+", "", val)
-    val = val.strip()
-    return val
+    return val.strip()
 
 
 def parse_prog_html(path):
@@ -89,68 +111,75 @@ def parse_prog_html(path):
     return prog_map
 
 
+def parse_single_choice_options(content):
+    """从题干文本中提取 A/B/C/D 选项"""
+    pattern = r'([A-D])[.、．]\s*(.+?)(?=\n?[A-D][.、．]|\Z)'
+    matches = re.findall(pattern, content, re.DOTALL)
+    if matches:
+        return [f"{m[0]}. {m[1].strip()}" for m in matches]
+    return []
+
+
 def seed_questions(db):
     prog_map = parse_prog_html(HTML_PROG)
-    data = load_workbook_safe(EXCEL_QA)
+    rows = load_qa_rows(EXCEL_QA)
     skipped = []
 
-    for row in data:
-        q_number = clean_dollar(row.get("原题号", ""))
-        chapter = clean_dollar(row.get("章节号", ""))
-        qtype = clean_dollar(row.get("题型", ""))
-        title = clean_dollar(row.get("标题", ""))
-        content = clean_dollar(row.get("内容", ""))
-        raw_answer = clean_dollar(row.get("答案栏", ""))
-        note = clean_dollar(row.get("备注", ""))
+    for row in rows:
+        q_number = row["q_number"]
+        qtype = row["type"]
+        title = clean_dollar(row["title"])
+        content = clean_dollar(row["content"])
+        raw_answer = clean_dollar(row["answer"])
+        note = clean_dollar(row["note"])
+        chapter = q_number.split(".")[0] if "." in q_number else q_number
         options = None
         answer_parts = None
         template = None
         answer_code = None
+        is_active = 1
 
         if qtype == "单选":
             options = parse_single_choice_options(content)
             if options:
                 answer_letter = None
-                for opt in options:
-                    opt_text = opt.split(".", 1)[-1].strip() if "." in opt else opt
-                    ans_text = raw_answer.strip()
-                    if ans_text == opt_text or ans_text.strip("'\"") == opt_text.strip("'\""):
-                        answer_letter = opt.split(".")[0].split("、")[0].strip()
+                ans_text = raw_answer.strip()
+                for opt_text in options:
+                    opt_body = opt_text.split(".", 1)[-1].strip()
+                    if ans_text == opt_body:
+                        answer_letter = opt_text[0]
                         break
                 if answer_letter:
                     raw_answer = answer_letter
                 else:
-                    skipped.append(f"{q_number}: 单选答案无法匹配选项 [{raw_answer}]")
+                    skipped.append(f"{q_number}: 单选答案无法匹配选项 [{raw_answer[:50]}]")
 
         elif qtype == "判断":
-            raw_answer = clean_dollar(row.get("答案栏", "")).strip()
             if raw_answer not in ("正确", "错误"):
-                skipped.append(f"{q_number}: 判断题答案异常 [{raw_answer}]")
+                skipped.append(f"{q_number}: 判断题答案异常 [{raw_answer[:50]}]")
 
         elif qtype == "填空":
-            cleaned = raw_answer
-            answer_parts_list = [p.strip() for p in cleaned.split("$") if p.strip()]
-            if answer_parts_list:
-                if cleaned.count("$") + 1 != len(answer_parts_list):
-                    skipped.append(f"{q_number}: 填空答案 $ 数量与空数不匹配")
-                answer_parts = json.dumps(answer_parts_list, ensure_ascii=False)
-            else:
-                answer_parts = json.dumps([cleaned], ensure_ascii=False)
+            answer_parts_list = [p.strip() for p in raw_answer.split("$") if p.strip()]
+            if not answer_parts_list:
+                answer_parts_list = [raw_answer]
+            if raw_answer.count("$") + 1 != len(answer_parts_list):
+                skipped.append(f"{q_number}: 填空 $ 数量({raw_answer.count('$')})与空数({len(answer_parts_list)})不匹配")
+            answer_parts = json.dumps(answer_parts_list, ensure_ascii=False)
 
         elif qtype == "编程":
             prog_info = prog_map.get(q_number, {})
             template = prog_info.get("template", "")
             answer_code = prog_info.get("answer_code", "")
-            if not template and not answer_code:
-                skipped.append(f"{q_number}: 编程题未找到 HTML 对应")
+            if not raw_answer and not answer_code:
+                is_active = 0
+                skipped.append(f"{q_number}: 编程题无答案，标记为停用")
 
-        is_active = 1
-        if chapter in ("8.33", "8.34", "8.35", "8.36"):
+        if q_number in ("8.33", "8.34", "8.35", "8.36"):
             is_active = 0
 
         db.execute("""
-            INSERT INTO questions (q_number, chapter, type, title, content, options,
-                                   answer, answer_parts, template, answer_code, note, is_active)
+            INSERT OR REPLACE INTO questions (q_number, chapter, type, title, content, options,
+                                              answer, answer_parts, template, answer_code, note, is_active)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (q_number, chapter, qtype, title, content, options,
               raw_answer, answer_parts, template, answer_code, note, is_active))
@@ -158,27 +187,13 @@ def seed_questions(db):
     return skipped
 
 
-def parse_single_choice_options(content):
-    pattern = r'([A-D][.、．]\s*(?:<[^>]+>)*\s*[^\n]+)'
-    matches = re.findall(pattern, content)
-    if not matches:
-        pattern2 = r'([A-D])\s*[.、．]\s*([^\n]+)'
-        matches2 = re.findall(pattern2, content)
-        if matches2:
-            return [f"{m[0]}. {m[1].strip()}" for m in matches2]
-    return matches
-
-
 def seed_roster(db):
-    data = load_workbook_safe(EXCEL_ROSTER)
-    for row in data:
-        for val in row.values():
-            sid = str(val).strip()
-            if sid.isdigit() and len(sid) == 10:
-                db.execute("""
-                    INSERT OR IGNORE INTO users (student_id, name, in_roster)
-                    VALUES (?, '待定', 1)
-                """, (sid,))
+    sids = load_roster_rows(EXCEL_ROSTER)
+    for sid in sids:
+        db.execute("""
+            INSERT OR IGNORE INTO users (student_id, name, in_roster)
+            VALUES (?, '待定', 1)
+        """, (sid,))
 
 
 def main():
@@ -188,14 +203,14 @@ def main():
         print(f"init_db 出错: {e}")
         return
     with get_db() as db:
-        db.execute("DELETE FROM questions")
         db.execute("DELETE FROM progress")
+        db.execute("DELETE FROM questions")
         db.execute("DELETE FROM users")
         skipped = seed_questions(db)
         seed_roster(db)
     print(f"种子数据导入完成。")
     if skipped:
-        print(f"警告 {len(skipped)} 条：")
+        print(f"\n警告 {len(skipped)} 条：")
         for s in skipped:
             print(f"  - {s}")
 
