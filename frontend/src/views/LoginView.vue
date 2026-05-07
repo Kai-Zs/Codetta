@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center justify-center min-h-full px-6 py-12">
+  <div class="flex flex-col items-center justify-center flex-1 px-6 py-12">
     <!-- 标题 -->
     <h1 class="text-2xl font-[Georgia] text-purple tracking-widest mb-1">练笔小筑</h1>
     <p class="text-xs text-gray-400 dark:text-gray-500 tracking-widest mb-12">一题一阶 · 拾级而上</p>

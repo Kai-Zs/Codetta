@@ -20,18 +20,18 @@
             <span class="text-sm text-gray-600 dark:text-gray-300">声音反馈</span>
             <button @click="settings.soundOn = !settings.soundOn; save()"
               :class="settings.soundOn ? 'bg-purple' : 'bg-gray-200 dark:bg-gray-600'"
-              class="w-12 h-7 rounded-full transition relative">
-              <span :class="settings.soundOn ? 'translate-x-6' : 'translate-x-1'"
-                class="absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform"></span>
+              class="w-12 h-7 rounded-full transition-colors relative">
+              <span :class="settings.soundOn ? 'translate-x-5' : 'translate-x-0'"
+                class="absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform duration-200"></span>
             </button>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-sm text-gray-600 dark:text-gray-300">震动反馈</span>
             <button @click="settings.vibrateOn = !settings.vibrateOn; save()"
               :class="settings.vibrateOn ? 'bg-purple' : 'bg-gray-200 dark:bg-gray-600'"
-              class="w-12 h-7 rounded-full transition relative">
-              <span :class="settings.vibrateOn ? 'translate-x-6' : 'translate-x-1'"
-                class="absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform"></span>
+              class="w-12 h-7 rounded-full transition-colors relative">
+              <span :class="settings.vibrateOn ? 'translate-x-5' : 'translate-x-0'"
+                class="absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform duration-200"></span>
             </button>
           </div>
         </div>

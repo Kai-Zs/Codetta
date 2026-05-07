@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col min-h-full">
+  <div class="flex flex-col flex-1">
     <header class="flex items-center px-3 py-3">
       <button @click="$router.back()" class="text-gray-400 dark:text-gray-500 p-1 mr-3">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>

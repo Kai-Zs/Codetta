@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center justify-center min-h-full px-6 py-12">
+  <div class="flex flex-col items-center justify-center flex-1 px-6 py-12">
     <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">管理员重置 PIN</h2>
     <p class="text-sm text-gray-400 dark:text-gray-500 mb-8">输入学号以重置该用户的 PIN</p>
     <input v-model="sid" maxlength="10" placeholder="学号"

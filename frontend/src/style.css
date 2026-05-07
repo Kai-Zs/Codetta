@@ -59,8 +59,8 @@
 .phone-shell {
   width: 340px;
   max-width: 88vw;
-  aspect-ratio: 9 / 16;
-  max-height: 90vh;
+  min-height: 520px;
+  max-height: 94vh;
   background: #fff;
   border-radius: 20px;
   box-shadow:
@@ -91,6 +91,8 @@
   flex: 1;
   overflow-y: auto;
   background: #fff;
+  display: flex;
+  flex-direction: column;
 }
 
 /* === 代码编辑器浮层 === */
