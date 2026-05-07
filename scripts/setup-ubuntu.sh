@@ -27,13 +27,9 @@ echo ">> 安装 Python 依赖..."
 pip install --upgrade pip
 pip install fastapi uvicorn openpyxl bcrypt sqlalchemy httpx itsdangerous
 
-# 初始化数据库
-echo ">> 初始化数据库..."
-python3 -m app.database 2>/dev/null || python3 -c "from app.database import init_db; init_db()"
-
-# 导入种子数据
-echo ">> 导入种子数据..."
-python3 seed/seed.py
+# 数据库已随仓库分发（backend/data/lianbi.db），启动时自动建表（如不存在）
+echo ">> 数据库已就绪（622 题，预封装）"
+echo ">> （如需从原始 Excel 重新生成，运行: python3 seed/seed.py）"
 
 # 创建 systemd 服务（可选）
 echo ""

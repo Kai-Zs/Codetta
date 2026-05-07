@@ -57,30 +57,18 @@ chmod +x scripts/setup-ubuntu.sh
 ./scripts/setup-ubuntu.sh
 ```
 
-脚本会自动安装 Python 依赖、初始化数据库、导入种子数据，并可选创建 systemd 自启动服务。
+脚本会自动安装 Python 依赖，数据库（622 题）已随仓库分发，开箱即用。可选创建 systemd 自启动服务。
 
 ### 手动安装
 
 ```bash
-# 1. 安装 Python
-sudo apt update && sudo apt install -y python3 python3-pip python3-venv
-
-# 2. 进入后端目录
+# 1. 安装依赖
+sudo apt update && sudo apt install -y python3 python3-pip
 cd backend
-python3 -m venv venv
-source venv/bin/activate
-
-# 3. 安装依赖
 pip install fastapi uvicorn openpyxl bcrypt sqlalchemy httpx itsdangerous
 
-# 4. 导入种子数据
-python3 seed/seed.py
-
-# 5. 设置环境变量
+# 2. 启动（数据库已预封装，无需导入）
 export DEEPSEEK_API_KEY="your-api-key"
-export SECRET_KEY="$(python3 -c 'import secrets;print(secrets.token_hex(32))')"
-
-# 6. 启动
 uvicorn app.main:app --host 0.0.0.0 --port 8765
 ```
 
@@ -96,13 +84,8 @@ npm run build      # 生产构建到 dist/
 ## Windows 安装
 
 ```bash
-# 后端依赖
+# 后端（数据库已预封装）
 pip install fastapi uvicorn openpyxl bcrypt sqlalchemy httpx itsdangerous
-
-# 导入种子数据
-python backend/seed/seed.py
-
-# 启动后端
 python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8765
 
 # 前端
