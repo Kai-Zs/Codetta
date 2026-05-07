@@ -55,6 +55,17 @@ def init_db():
             ON progress(user_id, question_id, answered_at DESC);
     """)
     conn.commit()
+
+    for col, ddl in [
+        ("pin_attempts", "ALTER TABLE users ADD COLUMN pin_attempts INTEGER NOT NULL DEFAULT 0"),
+        ("pin_locked_until", "ALTER TABLE users ADD COLUMN pin_locked_until TEXT"),
+    ]:
+        try:
+            conn.execute(ddl)
+        except sqlite3.OperationalError:
+            pass  # column already exists
+    conn.commit()
+
     conn.close()
 
 
