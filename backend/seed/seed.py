@@ -53,8 +53,17 @@ def parse_prog_html(path):
     """解析编程题 HTML：font10 color=red → 答案，黑色 → 模板"""
     if not os.path.exists(path):
         return {}
-    with open(path, encoding="utf-8") as f:
-        html = f.read()
+    html = None
+    for enc in ("utf-8", "gbk", "gb2312", "gb18030"):
+        try:
+            with open(path, encoding=enc) as f:
+                html = f.read()
+            break
+        except (UnicodeDecodeError, UnicodeError):
+            continue
+    if html is None:
+        print(f"无法解码 HTML 文件: {path}")
+        return {}
     prog_map = {}
     blocks = re.findall(
         r'<p class="MsoNormal"><b><span[^>]*>(\d+\.\d+)</span></b></p>(.*?)(?=<p class="MsoNormal"><b><span|$)',
