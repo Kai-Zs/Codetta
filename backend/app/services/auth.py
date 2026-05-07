@@ -23,7 +23,7 @@ def handle_login(student_id: str) -> dict:
 
 def verify_pin(student_id: str, pin: str) -> dict:
     conn = get_conn()
-    row = conn.execute("SELECT id, pin, pin_attempts, pin_locked_until FROM users WHERE student_id=?", (student_id,)).fetchone()
+    row = conn.execute("SELECT id, pin, pin_attempts, pin_locked_until, name FROM users WHERE student_id=?", (student_id,)).fetchone()
     if not row or not row["pin"]:
         conn.close()
         raise ValueError("用户不存在或未设置 PIN")
