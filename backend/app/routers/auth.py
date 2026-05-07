@@ -9,7 +9,10 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 @router.post("/login")
 def login(body: LoginRequest):
-    return handle_login(body.student_id)
+    result = handle_login(body.student_id)
+    if result["status"] == "need_setup":
+        result["token"] = create_token(result["user_id"])
+    return result
 
 
 @router.post("/verify-pin")

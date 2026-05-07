@@ -10,6 +10,10 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(studentId) {
       const { data } = await api.post('/auth/login', { student_id: studentId })
+      if (data.token) {
+        this.token = data.token
+        localStorage.setItem('token', data.token)
+      }
       return data
     },
     async verifyPin(studentId, pin) {

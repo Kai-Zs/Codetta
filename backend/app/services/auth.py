@@ -10,15 +10,16 @@ def handle_login(student_id: str) -> dict:
     row = conn.execute("SELECT id, name, pin, in_roster FROM users WHERE student_id=?", (student_id,)).fetchone()
     if not row:
         name = student_id[-4:] + "同学"
-        conn.execute("INSERT INTO users (student_id, name, in_roster) VALUES (?,?,0)", (student_id, name))
+        cur = conn.execute("INSERT INTO users (student_id, name, in_roster) VALUES (?,?,0)", (student_id, name))
+        user_id = cur.lastrowid
         conn.commit()
         conn.close()
-        return {"status": "need_setup", "name": name, "need_pin": False}
+        return {"status": "need_setup", "name": name, "need_pin": False, "user_id": user_id}
     if not row["pin"]:
         conn.close()
-        return {"status": "need_setup", "name": row["name"], "need_pin": False}
+        return {"status": "need_setup", "name": row["name"], "need_pin": False, "user_id": row["id"]}
     conn.close()
-    return {"status": "need_pin", "name": row["name"], "need_pin": True}
+    return {"status": "need_pin", "name": row["name"], "need_pin": True, "user_id": row["id"]}
 
 
 def verify_pin(student_id: str, pin: str) -> dict:
