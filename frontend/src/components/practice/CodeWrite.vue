@@ -12,7 +12,7 @@
       <p class="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-lg p-3">{{ result.comment }}</p>
       <p class="text-xs text-gray-400 dark:text-gray-600">人工智能生成，仅供参考</p>
     </div>
-    <div v-else class="text-sm text-gray-400 dark:text-gray-500 text-center py-8">代码将在{{ isMobile ? '下方' : '右侧' }}编辑器中编写</div>
+    <div v-else class="text-sm text-gray-400 dark:text-gray-500 text-center py-8">代码请在{{ isMobile ? '下方' : '右侧' }}编辑器中编写</div>
   </div>
 </template>
 

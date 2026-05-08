@@ -79,7 +79,8 @@ button, input, select, textarea {
 
 /* === 动态背景动画 === */
 @keyframes slideUpRight {
-  to { transform: translate(50px, -50px); }
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(56px, -56px, 0); }
 }
 
 @keyframes fadeInLeft {
@@ -205,6 +206,8 @@ button, input, select, textarea {
 /* === 通用工具类 === */
 .bg-pattern-anim {
   animation: slideUpRight 7s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .editor-panel-enter {
