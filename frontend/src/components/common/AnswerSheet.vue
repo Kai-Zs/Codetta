@@ -2,7 +2,7 @@
   <Teleport to="body">
     <Transition enter-active-class="transition duration-200 ease-out" leave-active-class="transition duration-150 ease-in"
       enter-from-class="opacity-0 scale-90" leave-to-class="opacity-0 scale-95">
-      <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" @click.self="$emit('close')">
+      <div v-if="open" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/40" @click.self="$emit('close')">
         <div class="answer-sheet-scroll bg-white dark:bg-gray-800 rounded-2xl px-6 py-5 w-80 max-w-[92vw] shadow-xl overflow-y-auto" :style="{ maxHeight: modalMaxH, transition: 'opacity 0.2s ease-out, transform 0.2s ease-out' }">
         <h3 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-4 text-center">答题卡</h3>
         <div>
