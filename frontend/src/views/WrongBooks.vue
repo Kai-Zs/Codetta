@@ -75,7 +75,18 @@ async function doRemove() {
   store.selected = []
   store.fetchList()
 }
+function isWechatMobile() {
+  const ua = navigator.userAgent
+  const isWechat = /MicroMessenger/i.test(ua)
+  const isMobile = /(Android|iPhone|iPad|iPod)/i.test(ua)
+  return isWechat && isMobile
+}
+
 async function doExport() {
+  if (isWechatMobile()) {
+    alert('微信内置浏览器不支持下载文件。\n请点击右上角 ··· 选择「在浏览器中打开」后再导出。')
+    return
+  }
   const blob = await store.exportExcel()
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a'); a.href = url; a.download = '错题.docx'; a.click()
