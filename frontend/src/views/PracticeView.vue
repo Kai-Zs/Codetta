@@ -268,7 +268,17 @@ async function markCorrect() {
   try {
     await api.post('/progress/mark-correct', null, { params: { question_id: qid } })
     answerStatuses.value[qid] = 'correct'
-    doneInfo.value[qid] = { ...doneInfo.value[qid], status: 'correct' }
+    // 同步更新 user_answer 中的 isCorrect，让组件不再高亮错误选项
+    const prevData = { ...doneInfo.value[qid] }
+    try {
+      const parsed = JSON.parse(prevData.user_answer || '{}')
+      parsed.isCorrect = true
+      prevData.user_answer = JSON.stringify(parsed)
+    } catch {}
+    prevData.status = 'correct'
+    doneInfo.value[qid] = prevData
+    previousAnswer.value = { ...previousAnswer.value, isCorrect: true, markedCorrect: true }
+    if (question.value.type !== '编程题') answerRef.value?.reset?.()
     showToast('已标记为正确')
   } catch { showToast('操作失败') }
 }

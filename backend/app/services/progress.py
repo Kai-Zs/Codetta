@@ -90,6 +90,10 @@ def mark_correct(user_id: int, question_id: int) -> None:
             (user_id, question_id, "correct", prev["user_answer"] if prev else "[]",
              prev["mode"] if prev else "sequential", prev["prog_submit_type"] if prev else "write")
         )
+        db.execute(
+            "UPDATE progress SET removed_from_wrong=1 WHERE user_id=? AND question_id=? AND answer_status IN ('incorrect','partial')",
+            (user_id, question_id)
+        )
 
 
 def clear_progress(user_id: int) -> None:

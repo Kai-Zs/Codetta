@@ -6,8 +6,9 @@
     </div>
     <div v-else-if="result" class="flex flex-col gap-3">
       <div class="flex items-center gap-3">
-        <span class="text-2xl font-bold" :class="result.is_correct ? 'text-green' : 'text-red-400'">{{ result.score }}/10</span>
-        <span class="text-sm" :class="result.is_correct ? 'text-green' : 'text-red-400'">{{ result.is_correct ? '正确' : '有误' }}</span>
+        <span class="text-2xl font-bold" :class="result.is_correct || markedCorrect ? 'text-green' : 'text-red-400'">{{ result.score }}/10</span>
+        <span class="text-sm" :class="result.is_correct || markedCorrect ? 'text-green' : 'text-red-400'">{{ result.is_correct || markedCorrect ? '正确' : '有误' }}</span>
+        <span v-if="markedCorrect && !result.is_correct" class="text-xs text-green ml-1">已被标为正确</span>
       </div>
       <p class="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-lg p-3">{{ result.comment }}</p>
       <p class="text-xs text-gray-400 dark:text-gray-600">人工智能生成，仅供参考</p>
@@ -23,10 +24,12 @@ const props = defineProps({ question: Object, submitted: Boolean, previousAnswer
 const loading = ref(false)
 const result = ref(null)
 const isMobile = ref(window.innerWidth <= 768)
+const markedCorrect = ref(false)
 
-// 回看时恢复 AI 判题结果
+// 回看时恢复 AI 判题结果 + 标记正确状态
 watch(() => props.previousAnswer, (prev) => {
   if (prev && prev.aiFeedback && props.submitted) result.value = prev.aiFeedback
+  markedCorrect.value = !!(prev && prev.markedCorrect)
 }, { immediate: true })
 
 async function doSubmit(code) {
