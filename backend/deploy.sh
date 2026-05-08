@@ -26,7 +26,7 @@ source "$VENV_DIR/bin/activate"
 # 2. 依赖
 echo "[2/5] 安装依赖..."
 pip install -q --upgrade pip
-pip install -q fastapi uvicorn python-dotenv openpyxl httpx itsdangerous python-docx
+pip install -q fastapi uvicorn python-dotenv openpyxl httpx itsdangerous python-docx bcrypt
 
 # 3. .env
 if [ -n "$DEEPSEEK_KEY" ]; then
