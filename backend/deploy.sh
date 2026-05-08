@@ -12,8 +12,9 @@ DEEPSEEK_KEY="${1:-}"
 echo "=== Codetta 后端部署 ==="
 
 # 1. 虚拟环境（自动安装 python3-venv 如缺失）
-if [ ! -d "$VENV_DIR" ]; then
+if [ ! -f "$VENV_DIR/bin/activate" ]; then
     echo "[1/5] 创建虚拟环境..."
+    rm -rf "$VENV_DIR"
     $PYTHON -m venv "$VENV_DIR" 2>/dev/null || {
         echo "  安装 python3-venv..."
         sudo apt install -y -q python3-venv
