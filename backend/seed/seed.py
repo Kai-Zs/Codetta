@@ -131,13 +131,33 @@ def parse_prog_html(path):
             full_parts.append(part)
 
         def clean_html(s):
-            s = re.sub(r'<br\s*/?>', '\n', s)
+            # 1. <br> → 占位符；&nbsp; → 空格占位符
+            s = re.sub(r'<br\s*/?>', '\x00BR\x00', s)
+            s = s.replace('&nbsp;', '\x00SP\x00')
+            # 2. 去掉 ruby 注解和所有 HTML 标签
             s = re.sub(r'<ruby>.*?</ruby>', '', s, flags=re.DOTALL)
             s = re.sub(r'<[^>]+>', '', s)
-            s = s.replace('&nbsp;', ' ').replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>').replace('&quot;', '"')
-            s = s.replace('\r\n', '\n').replace('\r', '\n')
-            lines = [l.strip() for l in s.split('\n')]
-            return '\n'.join(l for l in lines if l).strip()
+            # 3. 其他 HTML 实体
+            s = s.replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>').replace('&quot;', '"')
+            # 4. 把所有空白序列压缩为单个空格（占位符不受影响）
+            s = re.sub(r'\s+', ' ', s)
+            # 5. 恢复占位符
+            s = s.replace('\x00BR\x00', '\n')
+            s = s.replace('\x00SP\x00', ' ')
+            # 6. 每行仅去行尾空白，保留缩进
+            lines = [l.rstrip() for l in s.split('\n')]
+            lines = [l for l in lines if l.strip()]
+            # 7. 合并单独成行的 # 与下一行
+            merged = []
+            i = 0
+            while i < len(lines):
+                if lines[i] == '#' and i + 1 < len(lines):
+                    merged.append('# ' + lines[i+1])
+                    i += 2
+                else:
+                    merged.append(lines[i])
+                    i += 1
+            return '\n'.join(merged)
 
         prog_map[qn] = {
             "template": clean_html("".join(template_parts)),
