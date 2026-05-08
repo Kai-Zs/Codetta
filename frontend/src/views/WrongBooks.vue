@@ -78,7 +78,7 @@ async function doRemove() {
 async function doExport() {
   const blob = await store.exportExcel()
   const url = URL.createObjectURL(blob)
-  const a = document.createElement('a'); a.href = url; a.download = '错题.xlsx'; a.click()
+  const a = document.createElement('a'); a.href = url; a.download = '错题.docx'; a.click()
   URL.revokeObjectURL(url)
 }
 </script>

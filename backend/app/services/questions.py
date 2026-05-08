@@ -2,10 +2,16 @@
 from ..database import get_db
 
 
-def list_questions(type: str = "", chapter: str = "", page: int = 1, per: int = 20) -> dict:
+def list_questions(type: str = "", chapter: str = "", ids: str = "", page: int = 1, per: int = 20) -> dict:
     with get_db() as db:
         where = ["is_active=1"]
         params = []
+        if ids:
+            id_list = [int(x.strip()) for x in ids.split(",") if x.strip().isdigit()]
+            if id_list:
+                placeholders = ",".join("?" * len(id_list))
+                where.append(f"id IN ({placeholders})")
+                params.extend(id_list)
         if type:
             where.append("type=?")
             params.append(type)

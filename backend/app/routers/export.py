@@ -12,6 +12,6 @@ def export(user_id: int = Depends(get_user_id)):
     data = export_wrong(user_id)
     return Response(
         content=data,
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": "attachment; filename=wrong_questions.xlsx"},
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": "attachment; filename=wrong_questions.docx"},
     )

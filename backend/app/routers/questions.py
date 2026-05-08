@@ -10,11 +10,12 @@ router = APIRouter(prefix="/api/questions", tags=["questions"])
 def list_q(
     type: str = Query(""),
     chapter: str = Query(""),
+    ids: str = Query(""),
     page: int = Query(1, ge=1),
     per: int = Query(20, ge=1, le=1000),
     user_id: int = Depends(get_user_id),
 ):
-    return list_questions(type=type, chapter=chapter, page=page, per=per)
+    return list_questions(type=type, chapter=chapter, ids=ids, page=page, per=per)
 
 
 @router.get("/{question_id}")
