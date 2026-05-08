@@ -128,11 +128,18 @@ button, input, select, textarea {
   flex-direction: column;
 }
 
+/* === 手机壳 + 编辑器整体居中 === */
+.phone-wrapper { transition: transform 0.3s ease; }
+.phone-wrapper--editor { transform: translateX(-250px); }
+@media (max-width: 768px) {
+  .phone-wrapper--editor { transform: none; }
+}
+
 /* === 代码编辑器浮层 === */
 .editor-panel {
   position: fixed;
   top: 50%;
-  left: calc(50% + 210px);
+  left: calc(50% - 60px);
   transform: translateY(-50%);
   width: 480px;
   max-width: 40vw;

@@ -9,6 +9,7 @@ export const usePracticeStore = defineStore('practice', {
     answerSheet: [],
     loading: false,
     showEditor: false,
+    editorVisible: false,
   }),
   actions: {
     async fetchQuestion(id) {

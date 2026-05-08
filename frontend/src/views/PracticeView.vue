@@ -99,7 +99,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../api'
 import { useAuthStore } from '../stores/auth'
@@ -174,6 +174,8 @@ const typeComp = computed(() => {
 const showEditor = computed(() => {
   return question.value?.type === '编程题' && settings.progMode === 'write' && !isReadonly.value
 })
+watch(showEditor, (v) => { store.editorVisible = v }, { immediate: true })
+onBeforeUnmount(() => { store.editorVisible = false })
 
 const progressPercent = computed(() =>
   questions.value.length ? (questionIndex.value / questions.value.length) * 100 : 0)
