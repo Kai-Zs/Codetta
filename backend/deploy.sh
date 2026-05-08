@@ -11,15 +11,20 @@ DEEPSEEK_KEY="${1:-}"
 
 echo "=== Codetta 后端部署 ==="
 
-# 1. 虚拟环境
+# 1. 虚拟环境（自动安装 python3-venv 如缺失）
 if [ ! -d "$VENV_DIR" ]; then
     echo "[1/5] 创建虚拟环境..."
-    $PYTHON -m venv "$VENV_DIR"
+    $PYTHON -m venv "$VENV_DIR" 2>/dev/null || {
+        echo "  安装 python3-venv..."
+        sudo apt install -y -q python3-venv
+        $PYTHON -m venv "$VENV_DIR"
+    }
 fi
 source "$VENV_DIR/bin/activate"
 
 # 2. 依赖
 echo "[2/5] 安装依赖..."
+pip install -q --upgrade pip
 pip install -q fastapi uvicorn python-dotenv openpyxl httpx itsdangerous python-docx
 
 # 3. .env
