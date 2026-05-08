@@ -8,7 +8,7 @@
       <div class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
         <span>{{ question?.q_number }}</span>
         <span v-if="!isFromWrong">已做 {{ progress.done }}/{{ progress.total }}</span>
-        <span v-if="!isFromWrong">正确率 {{ progress.accuracy }}%</span>
+        <span v-if="!isFromWrong && store.mode !== 'filter'">正确率 {{ progress.accuracy }}%</span>
       </div>
       <button @click="showSheet = true" class="text-sm text-purple font-medium">答题卡</button>
     </header>
@@ -299,9 +299,9 @@ async function loadCurrent() {
   question.value = await store.fetchQuestion(questions.value[questionIndex.value].id)
   loading.value = false
 
-  // 已做题回看：设只读 + 恢复上次答案
+  // 已做题回看（顺序模式只读，筛选模式可重做）
   const prev = doneInfo.value[question.value.id]
-  if (prev && !isFromWrong.value) {
+  if (prev && !isFromWrong.value && store.mode !== 'filter') {
     submitted.value = true
     try { previousAnswer.value = JSON.parse(prev.user_answer) } catch { previousAnswer.value = prev.user_answer }
   }
