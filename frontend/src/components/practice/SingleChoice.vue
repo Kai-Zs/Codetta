@@ -12,7 +12,7 @@
             : i === correctIdx ? 'border-green bg-green/5 text-green' : 'border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-600'
           : answer === i ? 'border-purple bg-purple/5 dark:bg-purple/10 text-purple' : 'border-gray-100 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-gray-200 dark:hover:border-gray-600'
       ]">
-      {{ opt }}
+      <span v-html="renderOpt(opt)"></span>
     </button>
   </div>
 </template>
@@ -41,6 +41,7 @@ watch(() => props.previousAnswer, (prev) => {
   }
 }, { immediate: true })
 
+function renderOpt(text) { return text.replace(/\n/g, '<br>') }
 function select(i) { if (props.submitted) return; answer.value = i; emit('answer', letters[i]) }
 function getAnswer() { return answer.value >= 0 ? letters[answer.value] : '' }
 function reset() { answer.value = -1 }

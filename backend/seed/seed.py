@@ -213,6 +213,10 @@ def seed_questions(db):
             raw_answer = clean_answer_dollar(raw_answer)
             options = parse_single_choice_options(content)
             if options:
+                # 从题干中截掉内嵌的选项文本
+                m = re.search(r'\n([A-D][.、])', content)
+                if m:
+                    content = content[:m.start()].strip()
                 answer_letter = match_answer_to_option(raw_answer, options)
                 if answer_letter:
                     raw_answer = answer_letter
