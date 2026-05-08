@@ -250,6 +250,10 @@ async function doSubmit() {
   const status = result.isCorrect ? 'correct' : (result.partial ? 'partial' : 'incorrect')
   answerStatuses.value[question.value.id] = status
   doneInfo.value[question.value.id] = { status, user_answer: JSON.stringify(result) }
+  // 实时刷新进度
+  const statuses = Object.values(answerStatuses.value)
+  progress.done = statuses.length
+  progress.accuracy = progress.done ? Math.round(statuses.filter(s => s === 'correct').length / progress.done * 100 * 10) / 10 : 0
 
   try {
     await store.submitAnswer({
@@ -279,6 +283,8 @@ async function markCorrect() {
     doneInfo.value[qid] = prevData
     previousAnswer.value = { ...previousAnswer.value, isCorrect: true, markedCorrect: true }
     if (question.value.type !== '编程题') answerRef.value?.reset?.()
+    const statuses = Object.values(answerStatuses.value)
+    progress.accuracy = progress.done ? Math.round(statuses.filter(s => s === 'correct').length / progress.done * 100 * 10) / 10 : 0
     showToast('已标记为正确')
   } catch { showToast('操作失败') }
 }
