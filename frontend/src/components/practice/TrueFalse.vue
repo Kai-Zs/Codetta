@@ -22,11 +22,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
-const props = defineProps({ correctAnswer: String, submitted: Boolean })
+const props = defineProps({ correctAnswer: String, submitted: Boolean, previousAnswer: Object })
 const emit = defineEmits(['answer'])
 const answer = ref(null)
+
+watch(() => props.previousAnswer, (prev) => {
+  if (prev && prev.answer && props.submitted) {
+    answer.value = prev.answer === '正确'
+  }
+}, { immediate: true })
 
 function select(v) { if (props.submitted) return; answer.value = v; emit('answer', v ? '正确' : '错误') }
 function getAnswer() { return answer.value === true ? '正确' : answer.value === false ? '错误' : '' }

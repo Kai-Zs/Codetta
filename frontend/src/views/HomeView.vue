@@ -39,7 +39,7 @@
       </button>
       <button @click="showFilter = true"
         class="w-48 py-4 border-2 border-purple text-purple rounded-xl text-base font-medium hover:bg-purple/5 transition">
-        随机抽题
+        筛选刷题
       </button>
     </main>
 

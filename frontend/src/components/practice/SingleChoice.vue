@@ -12,20 +12,34 @@
             : i === correctIdx ? 'border-green bg-green/5 text-green' : 'border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-600'
           : answer === i ? 'border-purple bg-purple/5 dark:bg-purple/10 text-purple' : 'border-gray-100 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-gray-200 dark:hover:border-gray-600'
       ]">
-      <span class="font-medium mr-2">{{ letters[i] }}.</span>{{ opt }}
+      {{ opt }}
     </button>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
-const props = defineProps({ options: Array, submitted: Boolean })
+const props = defineProps({ options: Array, submitted: Boolean, correctAnswer: String, previousAnswer: Object })
 const emit = defineEmits(['answer'])
 
 const letters = 'ABCDEFGHIJ'.split('')
 const answer = ref(-1)
-const correctIdx = computed(() => -1)
+const correctIdx = computed(() => {
+  if (!props.correctAnswer) return -1
+  return props.options.findIndex(opt => {
+    const prefix = opt.trim().slice(0, 1).toUpperCase()
+    return prefix === props.correctAnswer.toUpperCase()
+  })
+})
+
+// 回看时恢复上次选择的索引
+watch(() => props.previousAnswer, (prev) => {
+  if (prev && prev.answer && props.submitted) {
+    const idx = letters.indexOf(prev.answer.toUpperCase())
+    if (idx >= 0 && idx < props.options.length) answer.value = idx
+  }
+}, { immediate: true })
 
 function select(i) { if (props.submitted) return; answer.value = i; emit('answer', letters[i]) }
 function getAnswer() { return answer.value >= 0 ? letters[answer.value] : '' }

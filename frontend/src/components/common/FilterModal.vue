@@ -1,10 +1,10 @@
 <template>
   <Teleport to="body">
-    <Transition enter-active-class="transition-opacity duration-200" leave-active-class="transition-opacity duration-150"
-      enter-from-class="opacity-0" leave-to-class="opacity-0">
-      <div v-if="open" class="fixed inset-0 z-50 flex items-end justify-center bg-black/40" @click.self="$emit('close')">
-        <div class="bg-white dark:bg-gray-800 rounded-t-2xl px-6 py-6 w-full max-w-sm">
-          <h3 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-4">随机抽题筛选</h3>
+    <Transition enter-active-class="transition duration-200 ease-out" leave-active-class="transition duration-150 ease-in"
+      enter-from-class="opacity-0 scale-90" leave-to-class="opacity-0 scale-95">
+      <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" @click.self="$emit('close')">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl px-6 py-6 w-72 shadow-xl">
+          <h3 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-4">筛选刷题</h3>
           <div class="mb-4">
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">题型</p>
             <div class="flex flex-wrap gap-2">
@@ -64,6 +64,6 @@ function toggleType(t) {
 
 function start() {
   store.setFilters({ ...filters.value })
-  router.push('/practice/random')
+  router.push('/practice/filter')
 }
 </script>

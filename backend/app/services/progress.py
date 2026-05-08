@@ -6,12 +6,13 @@ def get_progress(user_id: int) -> dict:
     with get_db() as db:
         total = db.execute("SELECT COUNT(*) FROM questions WHERE is_active=1").fetchone()[0]
         done_rows = db.execute(
-            "SELECT question_id, answer_status FROM progress WHERE rowid IN (SELECT MAX(rowid) FROM progress WHERE user_id=? GROUP BY question_id)",
+            "SELECT question_id, answer_status, user_answer FROM progress WHERE rowid IN (SELECT MAX(rowid) FROM progress WHERE user_id=? GROUP BY question_id)",
             (user_id,)
         ).fetchall()
         done = len(done_rows)
         correct = sum(1 for r in done_rows if r["answer_status"] == "correct")
         done_ids = [r["question_id"] for r in done_rows]
+        done_map = {r["question_id"]: {"status": r["answer_status"], "user_answer": r["user_answer"]} for r in done_rows}
         if done_ids:
             placeholders = ",".join("?" * len(done_ids))
             next_q = db.execute(
@@ -26,6 +27,7 @@ def get_progress(user_id: int) -> dict:
             "correct": correct,
             "accuracy": round(correct / done * 100, 1) if done else 0,
             "next_question_id": next_q["id"] if next_q else None,
+            "done_map": done_map,
         }
 
 
@@ -75,6 +77,19 @@ def remove_from_wrong(user_id: int, question_ids: list[int]) -> None:
                 "UPDATE progress SET removed_from_wrong=1 WHERE user_id=? AND question_id=?",
                 (user_id, qid)
             )
+
+
+def mark_correct(user_id: int, question_id: int) -> None:
+    with get_db() as db:
+        prev = db.execute(
+            "SELECT user_answer, mode, prog_submit_type FROM progress WHERE user_id=? AND question_id=? ORDER BY rowid DESC LIMIT 1",
+            (user_id, question_id)
+        ).fetchone()
+        db.execute(
+            "INSERT INTO progress (user_id, question_id, answer_status, user_answer, mode, prog_submit_type) VALUES (?,?,?,?,?,?)",
+            (user_id, question_id, "correct", prev["user_answer"] if prev else "[]",
+             prev["mode"] if prev else "sequential", prev["prog_submit_type"] if prev else "write")
+        )
 
 
 def clear_progress(user_id: int) -> None:

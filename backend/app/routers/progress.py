@@ -34,6 +34,12 @@ def remove_wrong(body: RemoveWrongRequest, user_id: int = Depends(get_user_id)):
     return {"ok": True}
 
 
+@router.post("/mark-correct")
+def mark_correct(question_id: int = Query(...), user_id: int = Depends(get_user_id)):
+    svc.mark_correct(user_id, question_id)
+    return {"ok": True}
+
+
 @router.delete("")
 def clear(user_id: int = Depends(get_user_id)):
     svc.clear_progress(user_id)

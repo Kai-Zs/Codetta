@@ -30,6 +30,26 @@ button, input, select, textarea {
 .dark .phone-content::-webkit-scrollbar-thumb,
 .dark .overflow-y-auto::-webkit-scrollbar-thumb { background: #3a3050; }
 
+/* 答题卡滚动条 — 更明显 + 不超圆角 */
+.answer-sheet-scroll::-webkit-scrollbar { width: 6px; }
+.answer-sheet-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 10px 0;
+}
+.answer-sheet-scroll::-webkit-scrollbar-thumb {
+  background: #b8a0e0;
+  border-radius: 3px;
+}
+.answer-sheet-scroll::-webkit-scrollbar-thumb:hover {
+  background: #9b7fd4;
+}
+.dark .answer-sheet-scroll::-webkit-scrollbar-thumb {
+  background: #4a3a60;
+}
+.dark .answer-sheet-scroll::-webkit-scrollbar-thumb:hover {
+  background: #5e4a78;
+}
+
 .dark .phone-content { background: #1a1a2e; color: #e0ddf0; }
 .dark .phone-statusbar { background: #1a1a2e; color: #e0ddf0; }
 /* 编辑器在暗黑模式下 */
@@ -145,16 +165,8 @@ button, input, select, textarea {
 .editor-area {
   width: 100%;
   height: 280px;
-  background: #1e1e2e;
   border-radius: 12px;
-  padding: 16px;
-  color: #e0ddf0;
-  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-  font-size: 13px;
-  line-height: 1.7;
-  border: none;
-  resize: none;
-  outline: none;
+  overflow: hidden;
 }
 
 .editor-footer {
@@ -167,9 +179,20 @@ button, input, select, textarea {
 
 /* === 响应式：编辑器下移 === */
 @media (max-width: 768px) {
-  .editor-panel {
-    width: 90vw;
-    max-width: 90vw;
+  .editor-panel--mobile {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+    margin-top: 12px;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(100, 40, 180, 0.08);
+  }
+  .editor-panel--mobile .editor-area {
+    height: 200px;
   }
 }
 

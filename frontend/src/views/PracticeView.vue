@@ -7,8 +7,6 @@
       </button>
       <div class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
         <span>{{ question?.q_number }}</span>
-        <button v-if="!isFromWrong" @click="toggleMode"
-          class="text-purple text-xs">{{ store.mode === 'random' ? '切顺序' : '切随机' }}</button>
         <span v-if="!isFromWrong">已做 {{ progress.done }}/{{ progress.total }}</span>
         <span v-if="!isFromWrong">正确率 {{ progress.accuracy }}%</span>
       </div>
@@ -45,6 +43,7 @@
           :blanks="parsedBlanks"
           :correct-answer="question.answer"
           :submitted="submitted"
+          :previous-answer="previousAnswer"
           @answer="onAnswer"
         />
       </template>
@@ -54,9 +53,12 @@
     <div class="px-4 pb-3">
       <button v-if="!isReadonly && !submitted" @click="doSubmit"
         class="w-full py-3 bg-purple text-white rounded-xl font-medium">提交</button>
+      <!-- 已做题回看：灰提交 + 标为正确（仅错题） -->
       <div v-if="submitted && !isFromWrong" class="flex gap-3">
+        <button v-if="isPrevWrong" @click="markCorrect"
+          class="flex-1 py-2.5 bg-green text-white rounded-lg text-sm font-medium">标为正确</button>
         <button @click="prevQuestion" :disabled="!hasPrev"
-          class="flex-1 py-2.5 border border-gray-200 rounded-lg text-sm disabled:opacity-30">上一题</button>
+          class="flex-1 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm disabled:opacity-30 text-gray-500 dark:text-gray-400">上一题</button>
         <button @click="nextQuestion" :disabled="!hasNext"
           class="flex-1 py-2.5 bg-purple text-white rounded-lg text-sm disabled:opacity-30">下一题</button>
       </div>
@@ -89,7 +91,7 @@
     <SettingsPanel :open="showSettings" @close="showSettings = false" />
 
     <!-- 编辑器浮层 -->
-    <CodeEditorPanel :visible="showEditor" :question="question" @submit="onEditorSubmit" />
+    <CodeEditorPanel :visible="showEditor" :question="question" :previous-answer="previousAnswer" @submit="onEditorSubmit" />
 
     <!-- Toast -->
     <Toast :visible="toastVisible" :msg="toastMsg" />
@@ -135,6 +137,8 @@ const showProgModeModal = ref(false)
 const toastVisible = ref(false)
 const toastMsg = ref('')
 const answerStatuses = ref({})
+const doneInfo = ref({})
+const previousAnswer = ref(null)
 const progress = reactive({ done: 0, total: 618, accuracy: 0 })
 const editorCode = ref('')
 const answerRef = ref(null)
@@ -151,6 +155,11 @@ const parsedBlanks = computed(() => {
 
 const isReadonly = computed(() => route.meta.readonly === true)
 const isFromWrong = computed(() => route.path.includes('/wrong'))
+const isPrevWrong = computed(() => {
+  if (!question.value) return false
+  const info = doneInfo.value[question.value.id]
+  return info && (info.status === 'incorrect' || info.status === 'partial')
+})
 
 const typeComp = computed(() => {
   if (!question.value) return null
@@ -210,26 +219,35 @@ async function doSubmit() {
     }
   } else {
     const ans = answerRef.value.getAnswer()
-    if (!ans && ans !== '') return
+    // 未作答不允许提交
+    if (question.value.type === '单选题' || question.value.type === '判断题') {
+      if (!ans) { showToast('未作答，不能提交'); return }
+    } else if (question.value.type === '填空题') {
+      if (!Array.isArray(ans) || ans.every(a => !a.input.trim())) { showToast('未作答，不能提交'); return }
+    }
     const correct = question.value.answer || ''
-    let isCorrect, partial
+    let isCorrect, partial, answer
     if (question.value.type === '单选题') {
+      answer = ans
       isCorrect = ans === correct
     } else if (question.value.type === '判断题') {
+      answer = ans
       isCorrect = ans === correct
     } else if (question.value.type === '填空题') {
       const parts = ans // getAnswer returns [{ input, is_correct }]
+      answer = parts
       if (answerRef.value && answerRef.value.checkResults) answerRef.value.checkResults()
       partial = parts.some(p => p.is_correct) && !parts.every(p => p.is_correct)
       isCorrect = parts.every(p => p.is_correct)
     }
-    result = { isCorrect, partial }
+    result = { isCorrect, partial, answer }
   }
   if (!result) return
 
   submitted.value = true
   const status = result.isCorrect ? 'correct' : (result.partial ? 'partial' : 'incorrect')
   answerStatuses.value[question.value.id] = status
+  doneInfo.value[question.value.id] = { status, user_answer: JSON.stringify(result) }
 
   try {
     await store.submitAnswer({
@@ -243,14 +261,32 @@ async function doSubmit() {
   } catch { /* error handled silently */ }
 }
 
+async function markCorrect() {
+  const qid = question.value.id
+  try {
+    await api.post('/progress/mark-correct', null, { params: { question_id: qid } })
+    answerStatuses.value[qid] = 'correct'
+    doneInfo.value[qid] = { ...doneInfo.value[qid], status: 'correct' }
+    showToast('已标记为正确')
+  } catch { showToast('操作失败') }
+}
+
 function onAnswer() { /* track user answer selection */ }
 
 async function loadCurrent() {
   if (!questions.value[questionIndex.value]) return
   loading.value = true
   submitted.value = false
+  previousAnswer.value = null
   question.value = await store.fetchQuestion(questions.value[questionIndex.value].id)
   loading.value = false
+
+  // 已做题回看：设只读 + 恢复上次答案
+  const prev = doneInfo.value[question.value.id]
+  if (prev && !isFromWrong.value) {
+    submitted.value = true
+    try { previousAnswer.value = JSON.parse(prev.user_answer) } catch { previousAnswer.value = prev.user_answer }
+  }
 
   if (question.value.type === '编程题' && auth.user?.prog_mode === null) {
     showProgModeModal.value = true
@@ -276,27 +312,28 @@ async function jumpTo(id) {
 
 function backToWrong() { router.push('/wrong') }
 
-function toggleMode() {
-  const newMode = store.mode === 'random' ? 'sequential' : 'random'
-  store.setMode(newMode)
-  if (newMode === 'random') {
-    for (let i = questions.value.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [questions.value[i], questions.value[j]] = [questions.value[j], questions.value[i]]
-    }
-  }
-  questionIndex.value = 0
-  loadCurrent()
-}
-
 onMounted(async () => {
   try {
     loading.value = true
     await auth.fetchMe()
     settings.init()
-    try { const { data } = await api.get('/progress'); Object.assign(progress, data) } catch {}
+    let nextId = null
+    try {
+      const { data } = await api.get('/progress')
+      Object.assign(progress, data)
+      nextId = data.next_question_id
+      const statusMap = {}
+      const infoMap = {}
+      for (const [qid, info] of Object.entries(data.done_map || {})) {
+        const nid = parseInt(qid)
+        statusMap[nid] = info.status
+        infoMap[nid] = info
+      }
+      answerStatuses.value = statusMap
+      doneInfo.value = infoMap
+    } catch {}
 
-    if (route.path.includes('/random')) store.setMode('random')
+    if (route.path.includes('/filter')) store.setMode('filter')
     else if (route.path.includes('/wrong')) store.setMode('wrong')
     else store.setMode('sequential')
 
@@ -306,20 +343,19 @@ onMounted(async () => {
       if (ids) params = { ids }
       else params = { type: '', chapter: '' }
     }
-    if (store.mode === 'random') {
-      params.type = store.filters.type.join(',')
-      params.chapter = store.filters.chapter
+    if (store.mode === 'filter') {
+      if (store.filters.type.length) params.type = store.filters.type.join(',')
+      if (store.filters.chapter) params.chapter = store.filters.chapter
     }
 
     const { data } = await api.get('/questions', { params })
     questions.value = data.items
-    if (store.mode === 'random') {
-      for (let i = questions.value.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [questions.value[i], questions.value[j]] = [questions.value[j], questions.value[i]]
-      }
+    // sequential 模式：从第一个未做题开始；filter 模式从第一题开始
+    if (store.mode === 'sequential' && nextId) {
+      const idx = questions.value.findIndex(q => q.id === nextId)
+      if (idx >= 0) questionIndex.value = idx
     }
-    if (questions.value.length) question.value = await store.fetchQuestion(questions.value[0].id)
+    if (questions.value.length) question.value = await store.fetchQuestion(questions.value[questionIndex.value].id)
   } catch (e) {
     console.error('PracticeView mount error:', e)
   } finally {

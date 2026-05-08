@@ -12,16 +12,22 @@
       <p class="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-lg p-3">{{ result.comment }}</p>
       <p class="text-xs text-gray-400 dark:text-gray-600">人工智能生成，仅供参考</p>
     </div>
-    <div v-else class="text-sm text-gray-400 dark:text-gray-500 text-center py-8">代码将在右侧编辑器中编写</div>
+    <div v-else class="text-sm text-gray-400 dark:text-gray-500 text-center py-8">代码将在{{ isMobile ? '下方' : '右侧' }}编辑器中编写</div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
-const props = defineProps({ question: Object, submitted: Boolean })
+const props = defineProps({ question: Object, submitted: Boolean, previousAnswer: Object })
 const loading = ref(false)
 const result = ref(null)
+const isMobile = ref(window.innerWidth <= 768)
+
+// 回看时恢复 AI 判题结果
+watch(() => props.previousAnswer, (prev) => {
+  if (prev && prev.aiFeedback && props.submitted) result.value = prev.aiFeedback
+}, { immediate: true })
 
 async function doSubmit(code) {
   if (!code) return { isCorrect: false }
@@ -31,10 +37,10 @@ async function doSubmit(code) {
     const { data } = await api.post('/judge/code', { question_id: props.question.id, user_code: code })
     result.value = data
     loading.value = false
-    return { isCorrect: data.is_correct, aiFeedback: data }
+    return { isCorrect: data.is_correct, aiFeedback: data, code }
   } catch {
     loading.value = false
-    return { isCorrect: false, timeout: true }
+    return { isCorrect: false, timeout: true, code }
   }
 }
 

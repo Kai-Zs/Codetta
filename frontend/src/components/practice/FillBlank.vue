@@ -21,12 +21,21 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 
-const props = defineProps({ blanks: Array, submitted: Boolean })
+const props = defineProps({ blanks: Array, submitted: Boolean, previousAnswer: Object })
 
 const answers = ref(props.blanks?.map(() => '') || [])
 const results = reactive([])
+
+// 回看时恢复上次填入的答案
+watch(() => props.previousAnswer, (prev) => {
+  if (prev && prev.answer && props.submitted && Array.isArray(prev.answer)) {
+    answers.value = prev.answer.map(a => a.input || '')
+    results.length = 0
+    prev.answer.forEach(a => results.push(!!a.is_correct))
+  }
+}, { immediate: true })
 
 function getAnswer() {
   const correct = props.blanks || []
