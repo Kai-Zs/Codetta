@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen flex items-center justify-center overflow-hidden">
     <BackgroundLayer />
-    <div :class="['phone-wrapper', { 'phone-wrapper--editor': hasEditor }]">
+    <!-- 管理后台独立布局，不走手机壳 -->
+    <router-view v-if="isAdmin" />
+    <div v-else :class="['phone-wrapper', { 'phone-wrapper--editor': hasEditor }]">
       <PhoneShell>
         <router-view />
       </PhoneShell>
@@ -20,15 +22,18 @@
 
 <script setup>
 import { computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import beianIcon from './assets/beian.png'
 import BackgroundLayer from './components/layout/BackgroundLayer.vue'
 import PhoneShell from './components/layout/PhoneShell.vue'
 import { useThemeStore } from './stores/theme'
 import { usePracticeStore } from './stores/practice'
 
+const route = useRoute()
 const theme = useThemeStore()
 const practice = usePracticeStore()
 const hasEditor = computed(() => practice.editorVisible)
+const isAdmin = computed(() => route.path.startsWith('/admin'))
 
 onMounted(() => { theme.init() })
 </script>

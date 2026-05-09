@@ -81,3 +81,7 @@ def update_settings(user_id: int, data: dict) -> None:
 def reset_pin(student_id: str) -> None:
     with get_db() as db:
         db.execute("UPDATE users SET pin=NULL, pin_attempts=0, pin_locked_until=NULL WHERE student_id=?", (student_id,))
+        user = db.execute("SELECT id FROM users WHERE student_id=?", (student_id,)).fetchone()
+        if user:
+            from ..auth import bump_token_version
+            bump_token_version(user["id"])

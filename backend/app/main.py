@@ -4,7 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from .routers import auth, questions, progress, judge, export
+from .routers import auth, questions, progress, judge, export, admin
+from .services.admin import get_maintenance_status
 
 app = FastAPI(title="Codetta API", version="0.1.0")
 
@@ -20,9 +21,17 @@ app.include_router(questions.router)
 app.include_router(progress.router)
 app.include_router(judge.router)
 app.include_router(export.router)
+app.include_router(admin.router)
 
 
 @app.get("/api/health")
+def health():
+    return {"ok": True}
+
+
+@app.get("/api/maintenance")
+def maintenance_status():
+    return {"maintenance": get_maintenance_status()}
 def health():
     return {"ok": True}
 
