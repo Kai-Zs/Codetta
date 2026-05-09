@@ -20,7 +20,7 @@
             <td class="py-2 pr-2 text-xs">{{ u.done_count || 0 }}</td>
             <td class="py-2 pr-2 text-xs">{{ u.accuracy }}%</td>
             <td class="py-2 text-xs flex gap-1">
-              <button @click="$router.push(`/admin/users/${u.id}`)" class="text-purple hover:underline">详情</button>
+              <button @click="$router.push({ path: `/admin/users/${u.id}`, query: { done: u.done_count, acc: u.accuracy } })" class="text-purple hover:underline">详情</button>
               <button @click="resetPin(u)" class="text-red-400 hover:underline">重置PIN</button>
             </td>
           </tr>

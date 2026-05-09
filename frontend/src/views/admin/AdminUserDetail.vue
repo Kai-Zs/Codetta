@@ -37,12 +37,11 @@ import api from '../../api'
 
 const route = useRoute()
 const user = ref({ records: [] })
-const doneCount = computed(() => user.value.records?.length || 0)
-const wrongCount = computed(() => user.value.records?.filter(r => r.answer_status !== 'correct').length || 0)
-const accuracy = computed(() => {
-  const d = doneCount.value
-  if (!d) return 0
-  return Math.round((d - wrongCount.value) / d * 100 * 10) / 10
+const doneCount = computed(() => parseInt(route.query.done) || 0)
+const accuracy = computed(() => parseFloat(route.query.acc) || 0)
+const wrongCount = computed(() => {
+  if (!doneCount.value || !accuracy.value) return 0
+  return doneCount.value - Math.round(doneCount.value * accuracy.value / 100)
 })
 
 onMounted(async () => {

@@ -55,8 +55,12 @@ onMounted(async () => {
 
 async function toggleMaintenance() {
   const newVal = !maintenance.value
-  await api.post('/admin/maintenance', null, { params: { enable: newVal ? 1 : 0 } })
-  maintenance.value = newVal
+  try {
+    await api.post('/admin/maintenance', null, { params: { enable: newVal ? 1 : 0 } })
+    maintenance.value = newVal
+  } catch {
+    pwdMsg.value = '操作失败，请检查权限'; pwdOk.value = false
+  }
 }
 
 async function changePwd() {
