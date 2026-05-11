@@ -36,7 +36,20 @@ CREATE TABLE IF NOT EXISTS kp_access (
 INSERT OR IGNORE INTO kp_access (student_id, enabled) VALUES ('2025006708', 1);
 ```
 
-表在 `main.py` 的 startup 事件中自动创建。
+表在 `main.py` 的 startup 事件中自动创建：
+
+```python
+# main.py 改动
+from .services.knowledge_point import init_kp_db
+
+@app.on_event("startup")
+def startup():
+    init_kp_db()
+
+# 注册路由
+from .routers import knowledge_point
+app.include_router(knowledge_point.router)
+```
 
 ### 2.2 文件变更
 
@@ -46,7 +59,6 @@ INSERT OR IGNORE INTO kp_access (student_id, enabled) VALUES ('2025006708', 1);
 | `backend/app/routers/knowledge_point.py` | **新建** — 3 个 API 端点 |
 | `backend/app/main.py` | **修改** — 注册路由 + startup 事件建 `ai_kp.db` 表 |
 | `backend/app/routers/admin.py` | **修改** — 新增 kp-access 端点 |
-| `backend/app/services/auth.py` | **修改** — `/auth/me` 返回 `kp_enabled` 字段 |
 | `backend/app/services/judge.py` | **修改** — 模型改为 `deepseek-v4-flash` |
 
 ### 2.3 模型变更
@@ -59,6 +71,7 @@ INSERT OR IGNORE INTO kp_access (student_id, enabled) VALUES ('2025006708', 1);
 
 | 方法 | 路径 | 请求体 | 说明 |
 |------|------|--------|------|
+| `GET` | `/api/kp/check` | — | 返回 `{kp_enabled: true/false}`，前端据此显隐按钮 |
 | `POST` | `/api/kp/analyze` | `{question_id}` | 有缓存返回缓存，无缓存调 AI 后存入 |
 | `POST` | `/api/kp/analyze` | `{question_id, force: true}` | 强制重新解析，覆盖缓存 |
 | `POST` | `/api/kp/chat` | `{question_id, messages: [{role, content}]}` | 追问，不存库 |
@@ -67,7 +80,7 @@ INSERT OR IGNORE INTO kp_access (student_id, enabled) VALUES ('2025006708', 1);
 
 权限校验逻辑抽取为公共函数 `check_kp_access(user_id)`，在 `knowledge_point.py` 服务层实现。
 
-`/api/auth/me` 响应新增 `kp_enabled` 布尔字段，供前端判断是否展示触发按钮。
+前端按钮可见性：`PracticeView` mounted 时调 `GET /api/kp/check`，返回 `kp_enabled` 决定按钮显隐。逻辑完全内聚在 knowledge_point 模块，不污染 auth。
 
 ### 2.5 Prompt 设计
 
@@ -109,9 +122,10 @@ INSERT OR IGNORE INTO kp_access (student_id, enabled) VALUES ('2025006708', 1);
 请结合以上上下文回答用户的问题。
 ```
 
-后端固定 system prompt，用户只能追加 user role 消息。每次请求前端传完整历史，后端限制最多 20 轮；超过 20 轮截断保留最近 15 轮。
+后端固定 system prompt，用户只能追加 user role 消息。每次请求前端传完整历史，后端做两段截断：
 
-Token 预算：消息总字符数超过 8000 时，丢弃最早的非 system 消息直到总量 < 8000。
+1. **轮数截断**（优先）：消息数组超过 20 条时，保留 system + 最近 15 轮
+2. **字符数截断**：总字符数超过 8000 时，从最早的非 system 消息开始丢弃，直到总长度 < 8000 或仅剩 system + 最近 3 轮（保底）
 
 ### 2.6 竞态保护
 
@@ -190,7 +204,7 @@ kpAccessMap: {},      // { student_id: boolean }
 - **解析加载中**：骨架屏 + "AI 正在分析知识点…" + spinner
 - **超时（40s）**："分析超时，请重试" + 重新解析按钮
 - **网络异常**：具体错误信息 + 重新解析按钮
-- **无权限（403）**：按钮不可见（后端 `/api/auth/me` 需额外返回 `kp_enabled: true/false`，前端据此显隐按钮）
+- **无权限**：前端 mounted 时调 `GET /api/kp/check` 返回 `kp_enabled`，false 则隐藏按钮
 - **无缓存状态**："点击「AI 知识点解析」按钮获取分析" 占位提示
 - **追问加载中**：发送按钮变 spinner
 
@@ -226,6 +240,8 @@ kpAccessMap: {},      // { student_id: boolean }
 | `POST` | `/api/admin/kp-access` | `{student_id, enabled}` 设置开关 |
 
 需要验证 `X-Admin-Password`（复用现有 admin auth）。
+
+注：用户列表来自 `lianbi.db`，kp_access 来自 `ai_kp.db`，两者无法 SQL JOIN。需在 Python 层合并：先从主库查所有用户，再从 `ai_kp.db` 查 `kp_access` 表做 dict 匹配。
 
 ### 4.2 前端
 
