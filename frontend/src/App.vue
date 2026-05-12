@@ -94,7 +94,7 @@ onMounted(() => {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  gap: 8px;
+  gap: 36px;
 }
 .kp-app-trigger {
   position: relative;
