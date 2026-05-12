@@ -81,6 +81,8 @@ onMounted(() => {
 
 <style scoped>
 .kp-app-row {
+  position: relative;
+  z-index: 10;
   display: flex;
   align-items: flex-start;
   justify-content: center;

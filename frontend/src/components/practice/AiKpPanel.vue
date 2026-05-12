@@ -134,6 +134,8 @@ watch(() => props.content, () => {
 
 <style scoped>
 .kp-panel {
+  position: relative;
+  z-index: 20;
   width: 400px;
   min-width: 400px;
   max-width: 400px;
