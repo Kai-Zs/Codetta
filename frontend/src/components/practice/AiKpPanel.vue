@@ -135,9 +135,12 @@ watch(() => props.content, () => {
 <style scoped>
 .kp-panel {
   width: 400px;
+  min-width: 400px;
+  max-width: 400px;
   min-height: 500px;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
   background: var(--bg-card, #fff);
   border: 1px solid var(--border-color, #e5e7eb);
   border-radius: 12px;

@@ -488,13 +488,9 @@ onMounted(async () => {
   flex-direction: column;
   width: 100%;
   max-width: 500px;
-  min-width: 0;
+  min-width: 280px;
   min-height: 0;
-  flex-shrink: 0;
-  transition: transform 0.3s ease;
-}
-.kp-expanded .kp-phone-area {
-  /* 面板打开时手机壳不再自动占满，保持固定宽度 */
+  flex-shrink: 1;
 }
 .kp-trigger-btn {
   writing-mode: vertical-rl;
