@@ -374,6 +374,8 @@ onMounted(async () => {
       if (idx >= 0) questionIndex.value = idx
     }
     if (questions.value.length) question.value = await store.fetchQuestion(questions.value[questionIndex.value].id)
+    // Sync to App.vue for KP trigger
+    if (question.value) window.__kpSetQuestion?.(question.value.id)
   } catch (e) {
     console.error('PracticeView mount error:', e)
   } finally {

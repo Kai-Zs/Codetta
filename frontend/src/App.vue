@@ -59,7 +59,15 @@ const isPractice = computed(() => route.path.startsWith('/practice'))
 const currentQuestionId = ref(null)
 
 // Allow PracticeView to set question context via global event
-window.__kpSetQuestion = (qid) => { currentQuestionId.value = qid }
+window.__kpSetQuestion = (qid) => {
+  currentQuestionId.value = qid
+  if (kpStore.aiOpen && qid) {
+    kpStore.questionId = qid
+    kpStore.aiContent = ''
+    kpStore.aiError = ''
+    kpStore._loadAnalysis()
+  }
+}
 
 function onReanalyze() {
   if (!confirm('将重新调用 AI 分析当前题目的知识点，是否继续？')) return
