@@ -4,7 +4,7 @@
     <!-- 管理后台 -->
     <router-view v-if="isAdmin" />
     <!-- 普通页面：手机壳 + AI面板 -->
-    <div v-if="!isAdmin" class="kp-app-row" :class="{ 'kp-app-row--open': kpStore.aiOpen }">
+    <div v-if="!isAdmin" class="kp-app-row" :style="{ gap: kpStore.aiOpen ? '36px' : '4px' }">
       <div :class="['phone-wrapper', { 'phone-wrapper--editor': hasEditor }]">
         <PhoneShell>
           <router-view />
@@ -94,7 +94,6 @@ onMounted(() => {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  gap: 36px;
 }
 .kp-app-trigger {
   position: relative;
