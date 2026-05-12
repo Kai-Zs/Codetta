@@ -10,7 +10,7 @@
       <table class="w-full text-sm text-left">
         <thead>
           <tr class="border-b border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400">
-            <th class="py-2 pr-2">学号</th><th class="py-2 pr-2">姓名</th><th class="py-2 pr-2 w-14">做题数</th><th class="py-2 pr-2 w-14">正确率</th><th class="py-2 w-28">操作</th>
+            <th class="py-2 pr-2">学号</th><th class="py-2 pr-2">姓名</th><th class="py-2 pr-2 w-14">做题数</th><th class="py-2 pr-2 w-14">正确率</th><th class="py-2 pr-2 w-20">AI知识点</th><th class="py-2 w-28">操作</th>
           </tr>
         </thead>
         <tbody>
@@ -19,6 +19,18 @@
             <td class="py-2 pr-2 text-xs">{{ u.name }}</td>
             <td class="py-2 pr-2 text-xs">{{ u.done_count || 0 }}</td>
             <td class="py-2 pr-2 text-xs">{{ u.accuracy }}%</td>
+            <td class="py-2 pr-2 text-xs">
+              <button
+                @click="toggleKp(u)"
+                :class="kpMap[u.student_id] ? 'bg-green' : 'bg-gray-200 dark:bg-gray-700'"
+                class="w-10 h-5 rounded-full relative transition-colors"
+              >
+                <span
+                  class="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"
+                  :class="kpMap[u.student_id] ? 'translate-x-5' : 'translate-x-0.5'"
+                ></span>
+              </button>
+            </td>
             <td class="py-2 text-xs flex gap-1">
               <button @click="$router.push({ path: `/admin/users/${u.id}`, query: { done: u.done_count, acc: u.accuracy } })" class="text-purple hover:underline">详情</button>
               <button @click="resetPin(u)" class="text-red-400 hover:underline">重置PIN</button>
@@ -49,9 +61,29 @@ import ConfirmDialog from '../../components/common/ConfirmDialog.vue'
 
 const searchStr = ref(''), list = ref([]), page = ref(1), total = ref(0), per = ref(20)
 const confirmOpen = ref(false), confirmMsg = ref(''), resetTarget = ref(null)
+const kpMap = ref({})
 
-onMounted(() => fetchList())
+onMounted(() => { fetchList(); fetchKpMap() })
 async function search() { page.value = 1; await fetchList() }
+
+async function fetchKpMap() {
+  try {
+    const { data } = await api.get('/admin/kp-access')
+    const map = {}
+    data.items.forEach(i => { map[i.student_id] = i.kp_enabled })
+    kpMap.value = map
+  } catch { /* ignore */ }
+}
+
+async function toggleKp(u) {
+  const newVal = !kpMap.value[u.student_id]
+  kpMap.value[u.student_id] = newVal
+  try {
+    await api.post('/admin/kp-access', { student_id: u.student_id, enabled: newVal })
+  } catch {
+    kpMap.value[u.student_id] = !newVal
+  }
+}
 async function fetchList() {
   const { data } = await api.get('/admin/users', { params: { search: searchStr.value, page: page.value, per: per.value } })
   list.value = data.items; total.value = data.total
