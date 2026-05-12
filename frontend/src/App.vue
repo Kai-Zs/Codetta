@@ -26,7 +26,7 @@
       />
     </div>
     <!-- 备案信息 -->
-    <div class="mt-auto pt-4 pb-1.5 text-center">
+    <div class="relative z-10 pt-4 pb-1.5 text-center">
       <p class="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
         <a href="https://beian.miit.gov.cn/" target="_blank" class="pointer-events-auto hover:text-gray-500 dark:hover:text-gray-400 transition">晋ICP备2026004314号-1</a>
         &nbsp;
