@@ -46,7 +46,7 @@
             <div class="kp-msg-bubble">{{ m.content }}</div>
           </template>
           <template v-else>
-            <div class="kp-msg-body" v-html="renderMd(m.content)"></div>
+            <div class="kp-msg-body" v-html="renderChatMd(i, m.content)"></div>
           </template>
         </div>
 
@@ -75,7 +75,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue'
 import { marked } from 'marked'
 import hljs from 'highlight.js/lib/common'
 import 'highlight.js/styles/github-dark.css'
@@ -87,7 +87,6 @@ marked.setOptions({ breaks: true, gfm: true })
 
 function renderMd(text) {
   try {
-    // KaTeX 公式
     let html = text.replace(/\$\$([\s\S]*?)\$\$/g, (_, f) => {
       try { return katex.renderToString(f.trim(), { displayMode: true, throwOnError: false }) }
       catch { return `<pre>${f}</pre>` }
@@ -96,28 +95,57 @@ function renderMd(text) {
       try { return katex.renderToString(f.trim(), { displayMode: false, throwOnError: false }) }
       catch { return f }
     })
-
-    // Markdown → HTML
     let mdHtml = marked.parse(html)
-
-    // 代码高亮后处理
     mdHtml = mdHtml.replace(/<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g, (_, lang, code) => {
       const unescaped = code.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"')
       const valid = hljs.getLanguage(lang)
       const highlighted = valid ? hljs.highlight(unescaped, { language: lang }).value : hljs.highlightAuto(unescaped).value
       return `<pre><span class="kp-code-lang">${lang}</span><code class="hljs">${highlighted}</code></pre>`
     })
-
-    // 链接新窗口打开
     mdHtml = mdHtml.replace(/<a /g, '<a target="_blank" rel="noopener noreferrer" ')
-
-    // 表格包裹
     mdHtml = mdHtml.replace(/(<table>[\s\S]*?<\/table>)/g, '<div class="kp-table-wrap">$1</div>')
-
     return DOMPurify.sanitize(mdHtml, { ADD_ATTR: ['target'] })
   } catch {
     return text.replace(/</g, '&lt;').replace(/>/g, '&gt;')
   }
+}
+
+// 打字机效果：逐字显示文本，每隔 throttleMs 渲染一次 markdown
+function useTypewriter(source, throttleMs = 60) {
+  const displayed = ref('')
+  let timer = null
+  let pos = 0
+  let stopped = false
+
+  function start(text) {
+    stop()
+    if (!text) { displayed.value = ''; return }
+    stopped = false
+    pos = 0
+    displayed.value = ''
+    const chars = [...text]  // 正确处理 Unicode/emoji
+    const step = Math.max(1, Math.floor(chars.length / 80)) || 1  // 约 80 帧完成
+    const interval = Math.max(16, Math.min(throttleMs, (chars.length / 80) * throttleMs / step))
+
+    timer = setInterval(() => {
+      if (stopped) return
+      pos = Math.min(pos + step, chars.length)
+      displayed.value = chars.slice(0, pos).join('')
+      if (pos >= chars.length) stop()
+    }, interval)
+  }
+
+  function stop() {
+    stopped = true
+    if (timer) { clearInterval(timer); timer = null }
+  }
+
+  function finish() {
+    stop()
+    if (source.value) displayed.value = source.value
+  }
+
+  return { displayed, start, stop, finish }
 }
 
 const props = defineProps({
@@ -129,12 +157,53 @@ const props = defineProps({
 const emit = defineEmits(['close', 'reanalyze', 'chat'])
 
 const chatMessages = ref([])
+const chatMsgTyping = ref(new Map())  // index → displayed raw text
 const chatInput = ref('')
 const chatLoading = ref(false)
 const convRef = ref(null)
 const inputRef = ref(null)
 
-const renderedContent = computed(() => props.content ? renderMd(props.content) : '')
+// 初始解析的打字机
+const { displayed: typewriterText, start: twStart, stop: twStop, finish: twFinish } = useTypewriter(() => props.content)
+const renderedContent = computed(() => typewriterText.value ? renderMd(typewriterText.value) : '')
+
+// content 变化时启动打字机
+watch(() => props.content, (val) => {
+  if (val) twStart(val)
+  else typewriterText.value = ''
+})
+
+// 异步打字机辅助
+function typeOutMessage(index, text) {
+  const chars = [...text]
+  let pos = 0
+  const step = Math.max(1, Math.floor(chars.length / 60)) || 1
+  const map = new Map(chatMsgTyping.value)
+  map.set(index, '')
+  chatMsgTyping.value = map
+
+  return new Promise(resolve => {
+    const timer = setInterval(() => {
+      pos = Math.min(pos + step, chars.length)
+      const m = new Map(chatMsgTyping.value)
+      m.set(index, chars.slice(0, pos).join(''))
+      chatMsgTyping.value = m
+      if (pos >= chars.length) { clearInterval(timer); resolve() }
+    }, 40)
+  })
+}
+
+function getTypedMsg(index, raw) {
+  const typing = chatMsgTyping.value.get(index)
+  return typing !== undefined ? typing : raw
+}
+
+// 渲染追问 AI 回复
+function renderChatMd(index, raw) {
+  const text = getTypedMsg(index, raw)
+  if (text === raw) return renderMd(raw)  // 已完成
+  return renderMd(text)  // 打字中
+}
 
 function scrollBottom() {
   nextTick(() => {
@@ -154,7 +223,10 @@ async function send() {
     const reply = await new Promise((resolve, reject) => {
       emit('chat', chatMessages.value, resolve, reject)
     })
+    const idx = chatMessages.value.length
     chatMessages.value.push({ role: 'assistant', content: reply })
+    // 启动打字机动画
+    await typeOutMessage(idx, reply)
   } catch {
     chatMessages.value.push({ role: 'assistant', content: '追问失败，请重试。' })
   } finally {
@@ -166,8 +238,11 @@ async function send() {
 // 内容变化时清空追问历史
 watch(() => props.content, () => {
   chatMessages.value = []
+  chatMsgTyping.value = new Map()
   scrollBottom()
 })
+
+onBeforeUnmount(() => { twStop() })
 </script>
 
 <style scoped>
