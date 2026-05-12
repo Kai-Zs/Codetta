@@ -2,6 +2,7 @@
 import os
 import threading
 import httpx
+from contextlib import contextmanager
 from ..database import get_db
 from ..config import DEEPSEEK_API_KEY, DEEPSEEK_TIMEOUT, BASE_DIR
 
@@ -19,6 +20,7 @@ def get_kp_conn():
     return conn
 
 
+@contextmanager
 def get_kp_db():
     conn = get_kp_conn()
     try:
