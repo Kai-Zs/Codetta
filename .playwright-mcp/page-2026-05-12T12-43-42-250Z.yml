@@ -1,0 +1,8 @@
+- generic [ref=e3]:
+  - generic:
+    - paragraph:
+      - link "晋ICP备2026004314号-1" [ref=e7] [cursor=pointer]:
+        - /url: https://beian.miit.gov.cn/
+      - img
+      - link "晋公网安备14108102001175号" [ref=e8] [cursor=pointer]:
+        - /url: https://beian.mps.gov.cn/#/query/webSearch?code=14108102001175

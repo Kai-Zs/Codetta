@@ -12,10 +12,11 @@ api.interceptors.request.use(config => {
 
 api.interceptors.response.use(
   res => res,
-  err => {
+  async err => {
     if (err.response?.status === 401) {
       localStorage.removeItem('token')
-      window.location.href = '/login'
+      const { default: router } = await import('../router')
+      router.push('/login')
     }
     return Promise.reject(err)
   }

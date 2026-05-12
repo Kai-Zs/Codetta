@@ -136,9 +136,9 @@ watch(() => props.content, () => {
 .kp-panel {
   position: relative;
   z-index: 20;
-  width: 680px;
-  min-width: 680px;
-  max-width: 680px;
+  flex: 1;
+  min-width: 340px;
+  max-width: 880px;
   min-height: 500px;
   display: flex;
   flex-direction: column;

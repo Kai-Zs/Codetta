@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>练笔小筑 — 预览</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    background: #0f0f1a;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  /* === 动态背景层 === */
+  .bg-layer {
+    position: fixed; inset: 0;
+    pointer-events: none;
+  }
+
+  /* 底层：暗色渐变 */
+  .bg-gradient {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 20%, #1a1030 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, #0f1a2e 0%, transparent 50%),
+                #0a0a14;
+  }
+
+  /* 斜向网格线 — 45°匀速运动 */
+  @keyframes drift1 {
+    to { background-position: 40px 40px; }
+  }
+  @keyframes drift2 {
+    to { background-position: -60px -60px; }
+  }
+  @keyframes drift3 {
+    to { background-position: 28px 28px; }
+  }
+
+  .bg-grid {
+    position: absolute; inset: -100px;
+    opacity: 0.15;
+    background-image:
+      linear-gradient(45deg, rgba(124,58,237,0.3) 0.5px, transparent 0.5px),
+      linear-gradient(135deg, rgba(124,58,237,0.15) 0.5px, transparent 0.5px);
+    background-size: 40px 40px, 40px 40px;
+    animation: drift1 6s linear infinite;
+  }
+
+  /* 斜向圆点 — 反方向运动，产生层次 */
+  .bg-dots {
+    position: absolute; inset: -100px;
+    opacity: 0.25;
+    background-image:
+      radial-gradient(rgba(139,92,246,0.5) 1.2px, transparent 1.2px),
+      radial-gradient(rgba(139,92,246,0.3) 0.8px, transparent 0.8px);
+    background-size: 60px 60px, 40px 40px;
+    background-position: 0 0, 20px 20px;
+    animation: drift2 10s linear infinite;
+  }
+
+  /* 大圆点稀疏层 */
+  .bg-sparse {
+    position: absolute; inset: -100px;
+    opacity: 0.2;
+    background-image: radial-gradient(rgba(167,139,250,0.6) 2px, transparent 2px);
+    background-size: 80px 80px;
+    background-position: 28px 28px;
+    animation: drift3 8s linear infinite;
+  }
+
+  /* === 手机外框 === */
+  .phone-container {
+    position: relative; z-index: 10;
+    width: 390px; max-width: 92vw;
+    aspect-ratio: 9 / 16;
+    max-height: 92vh;
+    background: #fff;
+    border-radius: 32px;
+    box-shadow: 0 0 0 3px #1a1a2e, 0 0 0 6px #2d2d44, 0 20px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  /* 手机顶部状态栏 */
+  .phone-statusbar {
+    height: 44px;
+    background: #faf8ff;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px;
+    flex-shrink: 0;
+  }
+  .phone-statusbar .time { font-size: 12px; font-weight: 600; color: #1a1a2e; }
+  .phone-statusbar .icons { font-size: 10px; color: #666; display: flex; gap: 4px; }
+
+  /* 手机内容区域 */
+  .phone-content {
+    flex: 1; overflow-y: auto;
+    background: #faf8ff;
+  }
+
+  /* === 首页内容 === */
+  .home-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 20px;
+  }
+  .home-header .name { font-size: 14px; font-weight: 500; color: #555; }
+
+  .home-progress {
+    display: flex; gap: 24px; padding: 0 20px 16px;
+  }
+  .home-progress .stat { font-size: 13px; color: #888; }
+  .home-progress .stat strong { color: #333; }
+
+  .home-main {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 40px 20px 60px;
+  }
+  .home-main h1 {
+    font-family: 'Georgia', 'Noto Serif SC', serif;
+    font-size: 28px; color: #7c3aed; margin-bottom: 4px;
+    letter-spacing: 2px;
+  }
+  .home-main .tagline {
+    font-size: 12px; color: #aaa; letter-spacing: 4px;
+    margin-bottom: 48px;
+  }
+  .btn-solid {
+    width: 200px; padding: 16px 0;
+    background: #7c3aed; color: #fff;
+    border: none; border-radius: 14px;
+    font-size: 16px; font-weight: 500;
+    margin-bottom: 12px; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(124,58,237,0.25);
+  }
+  .btn-outline {
+    width: 200px; padding: 16px 0;
+    background: transparent; color: #7c3aed;
+    border: 2px solid #7c3aed; border-radius: 14px;
+    font-size: 16px; font-weight: 500;
+    cursor: pointer;
+  }
+  .home-footer {
+    position: absolute; bottom: 20px; left: 0; right: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 20px;
+  }
+  .home-footer .credit { font-size: 10px; color: #ccc; }
+  .home-footer .settings { width: 20px; height: 20px; color: #ccc; cursor: pointer; }
+
+  /* 圆点装饰 */
+  .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #7c3aed; margin: 0 2px; }
+  .dot.gray { background: #e5e0f0; }
+</style>
+</head>
+<body>
+
+<!-- 动态背景 -->
+<div class="bg-layer">
+  <div class="bg-gradient"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-dots"></div>
+  <div class="bg-sparse"></div>
+</div>
+
+<!-- 手机外框 -->
+<div class="phone-container">
+  <div class="phone-statusbar">
+    <span class="time">9:41</span>
+    <span class="icons">████ ████</span>
+  </div>
+
+  <div class="phone-content" style="position:relative;">
+    <div class="home-header">
+      <span></span>
+      <span class="name">张同学</span>
+    </div>
+
+    <div class="home-progress">
+      <span class="stat">已做 <strong>142</strong>/618</span>
+      <span class="stat">正确率 <strong>78%</strong></span>
+    </div>
+
+    <div class="home-main">
+      <h1>练笔小筑</h1>
+      <p class="tagline">一题一阶 · 拾级而上</p>
+      <button class="btn-solid">顺序刷题</button>
+      <button class="btn-outline">随机抽题</button>
+    </div>
+
+    <div class="home-footer">
+      <span class="credit">Powered by 凯Z闪</span>
+      <svg class="settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

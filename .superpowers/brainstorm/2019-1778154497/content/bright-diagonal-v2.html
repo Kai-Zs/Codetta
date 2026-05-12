@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>练笔小筑</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  .bg-base {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, #ede0ff 0%, #dce6ff 40%, #ffe4f0 70%, #e8e0ff 100%);
+    z-index: 0;
+  }
+
+  /* 单层：圆点+加号混合，45°平铺 */
+  @keyframes slideUpRight { to { transform: translate(50px, -50px); } }
+
+  .pattern-layer {
+    position: fixed; inset: -100px; pointer-events: none; z-index: 1;
+    opacity: 0.25;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Ccircle cx='28' cy='28' r='2.5' fill='%237c3aed'/%3E%3Cpath d='M8 8l12 12M20 8L8 20' stroke='%23a78bfa' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M48 48l12 12M60 48l-12 12' stroke='%23a78bfa' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-size: 56px 56px;
+    animation: slideUpRight 7s linear infinite;
+  }
+
+  .phone-container {
+    position: relative; z-index: 10;
+    width: 390px; max-width: 92vw;
+    aspect-ratio: 9 / 16;
+    max-height: 92vh;
+    background: #fff;
+    border-radius: 32px;
+    box-shadow: 0 0 0 3px #d4c0f0, 0 0 0 5px #b8a0e0, 0 24px 80px rgba(100,40,180,0.15);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  .phone-statusbar {
+    height: 44px; background: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; flex-shrink: 0;
+  }
+  .phone-statusbar .time { font-size: 12px; font-weight: 600; color: #1a1a2e; }
+  .phone-statusbar .icons { font-size: 10px; color: #999; }
+
+  .phone-content { flex: 1; overflow-y: auto; background: #fff; }
+
+  .home-header { display: flex; justify-content: center; padding: 12px 20px; }
+  .home-header .name { font-size: 14px; font-weight: 500; color: #555; }
+
+  .home-progress { display: flex; gap: 24px; padding: 0 20px 16px; justify-content: center; }
+  .home-progress .stat { font-size: 13px; color: #888; }
+  .home-progress .stat strong { color: #333; }
+
+  .home-main {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 48px 20px 60px;
+  }
+  .home-main h1 {
+    font-family: 'Georgia', 'Noto Serif SC', serif;
+    font-size: 28px; color: #7c3aed; margin-bottom: 4px; letter-spacing: 2px;
+  }
+  .home-main .tagline { font-size: 12px; color: #aaa; letter-spacing: 4px; margin-bottom: 48px; }
+  .btn-solid {
+    width: 200px; padding: 16px 0;
+    background: #7c3aed; color: #fff;
+    border: none; border-radius: 14px;
+    font-size: 16px; font-weight: 500; margin-bottom: 12px; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(124,58,237,0.25);
+  }
+  .btn-outline {
+    width: 200px; padding: 16px 0;
+    background: transparent; color: #7c3aed;
+    border: 2px solid #7c3aed; border-radius: 14px;
+    font-size: 16px; font-weight: 500; cursor: pointer;
+  }
+  .home-footer {
+    margin-top: 24px; display: flex; justify-content: space-between; align-items: center;
+    padding: 0 20px;
+  }
+  .home-footer .credit { font-size: 10px; color: #ccc; }
+  .home-footer .settings { width: 18px; height: 18px; color: #ccc; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="bg-base"></div>
+<div class="pattern-layer"></div>
+
+<div class="phone-container">
+  <div class="phone-statusbar">
+    <span class="time">9:41</span>
+    <span class="icons">████ ████</span>
+  </div>
+  <div class="phone-content">
+    <div class="home-header"><span class="name">张同学</span></div>
+    <div class="home-progress">
+      <span class="stat">已做 <strong>142</strong>/618</span>
+      <span class="stat">正确率 <strong>78%</strong></span>
+    </div>
+    <div class="home-main">
+      <h1>练笔小筑</h1>
+      <p class="tagline">一题一阶 · 拾级而上</p>
+      <button class="btn-solid">顺序刷题</button>
+      <button class="btn-outline">随机抽题</button>
+    </div>
+    <div class="home-footer">
+      <span class="credit">Powered by 凯Z闪</span>
+      <svg class="settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

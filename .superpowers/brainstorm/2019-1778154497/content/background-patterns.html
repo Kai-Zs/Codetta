@@ -1,0 +1,49 @@
+<h2>图案阵列匀速运动 — 三种风格</h2>
+<p class="subtitle">年轻、现代、干净的几何阵列动效背景</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="width:100%;aspect-ratio:4/3;background:linear-gradient(180deg,#f8f6ff,#f3f0ff,#f8f6ff);border-radius:8px;overflow:hidden;position:relative;">
+        <svg viewBox="0 0 300 225" style="width:100%;height:100%;position:absolute;">
+          <defs><pattern id="da2" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="15" cy="15" r="2" fill="rgba(124,58,237,0.12)"/></pattern></defs>
+          <rect width="300" height="225" fill="url(#da2)"/>
+        </svg>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;aspect-ratio:9/16;background:white;border-radius:10px;box-shadow:0 4px 24px rgba(124,58,237,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;color:#333;border:1px solid rgba(0,0,0,0.04);">练笔小筑</div>
+      </div>
+    </div>
+    <div class="card-body"><h3>A — 圆点矩阵</h3><p>等距圆点阵列整体匀速平移，干净克制</p></div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="width:100%;aspect-ratio:4/3;background:linear-gradient(180deg,#f5f3ff,#faf8ff,#f5f3ff);border-radius:8px;overflow:hidden;position:relative;">
+        <svg viewBox="0 0 300 225" style="width:100%;height:100%;position:absolute;">
+          <defs><pattern id="db2" width="40" height="40" patternUnits="userSpaceOnUse"><polygon points="20,4 36,20 20,36 4,20" fill="none" stroke="rgba(124,58,237,0.1)" stroke-width="1"/></pattern></defs>
+          <rect width="300" height="225" fill="url(#db2)"/>
+        </svg>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;aspect-ratio:9/16;background:white;border-radius:10px;box-shadow:0 4px 24px rgba(124,58,237,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;color:#333;border:1px solid rgba(0,0,0,0.04);">练笔小筑</div>
+      </div>
+    </div>
+    <div class="card-body"><h3>B — 菱形网格</h3><p>细线菱形阵列平移，几何感更强</p></div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="width:100%;aspect-ratio:4/3;background:linear-gradient(180deg,#faf7ff,#f5f0ff,#faf7ff);border-radius:8px;overflow:hidden;position:relative;">
+        <svg viewBox="0 0 300 225" style="width:100%;height:100%;position:absolute;">
+          <defs>
+            <pattern id="dc2" width="48" height="48" patternUnits="userSpaceOnUse">
+              <circle cx="12" cy="12" r="3" fill="rgba(124,58,237,0.1)"/>
+              <rect x="21" y="21" width="6" height="6" rx="1" fill="rgba(124,58,237,0.08)" transform="rotate(45 24 24)"/>
+              <circle cx="36" cy="36" r="2" fill="rgba(124,58,237,0.06)"/>
+            </pattern>
+          </defs>
+          <rect width="300" height="225" fill="url(#dc2)"/>
+        </svg>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;aspect-ratio:9/16;background:white;border-radius:10px;box-shadow:0 4px 24px rgba(124,58,237,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;color:#333;border:1px solid rgba(0,0,0,0.04);">练笔小筑</div>
+      </div>
+    </div>
+    <div class="card-body"><h3>C — 混合几何</h3><p>圆点+方块的节奏组合，更活泼年轻</p></div>
+  </div>
+</div>

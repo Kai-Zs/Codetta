@@ -35,11 +35,12 @@ export const useAuthStore = defineStore('auth', {
       await api.patch('/auth/settings', settings)
       if (this.user) Object.assign(this.user, settings)
     },
-    logout() {
+    async logout() {
       this.token = ''
       this.user = null
       localStorage.removeItem('token')
-      window.location.href = '/login'
+      const { default: router } = await import('../router')
+      router.push('/login')
     },
   },
 })

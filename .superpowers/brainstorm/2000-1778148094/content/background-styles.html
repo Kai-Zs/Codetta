@@ -1,0 +1,60 @@
+<h2>四种动态背景风格</h2>
+<p class="subtitle">中间白色卡片模拟"悬浮手机页面"的观感</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="width:100%;aspect-ratio:4/3;background:#0a0a0a;border-radius:8px;overflow:hidden;position:relative;">
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.9),rgba(0,20,0,0.85));"></div>
+        <div style="position:absolute;top:10%;left:10%;right:10%;bottom:10%;display:flex;flex-direction:column;gap:3px;overflow:hidden;opacity:0.7;">
+          <span style="color:#0f0;font:10px monospace;">for i in range(10):</span>
+          <span style="color:#0f0;font:10px monospace;">&nbsp;&nbsp;print("hello")</span>
+          <span style="color:#0f8;font:10px monospace;">def solve(n):</span>
+          <span style="color:#0f8;font:10px monospace;">&nbsp;&nbsp;return n**2</span>
+          <span style="color:#0f0;font:10px monospace;">import numpy as np</span>
+          <span style="color:#0f8;font:10px monospace;">arr = np.array([1,2])</span>
+          <span style="color:#0f0;font:10px monospace;">x = lambda a: a+1</span>
+          <span style="color:#0f8;font:10px monospace;">class Node: pass</span>
+        </div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:55%;aspect-ratio:9/16;background:white;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;font-size:9px;color:#333;">练笔小筑</div>
+      </div>
+    </div>
+    <div class="card-body"><h3>A — 代码雨</h3><p>绿色字符下落，契合编程刷题主题，视觉冲击力强</p></div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,#2d1b69,#1a0533,#2d1b69);border-radius:8px;overflow:hidden;position:relative;">
+        <div style="position:absolute;width:60px;height:60px;background:rgba(180,130,255,0.15);border-radius:50%;top:15%;left:20%;"></div>
+        <div style="position:absolute;width:40px;height:40px;background:rgba(180,130,255,0.12);border-radius:50%;top:25%;right:25%;"></div>
+        <div style="position:absolute;width:80px;height:80px;background:rgba(160,100,255,0.1);border-radius:50%;bottom:15%;left:15%;"></div>
+        <div style="position:absolute;width:30px;height:30px;background:rgba(200,160,255,0.2);border-radius:50%;top:50%;right:15%;"></div>
+        <div style="position:absolute;width:50px;height:50px;background:rgba(140,100,255,0.08);border-radius:50%;bottom:25%;right:35%;"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:55%;aspect-ratio:9/16;background:white;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:9px;color:#333;">练笔小筑</div>
+      </div>
+    </div>
+    <div class="card-body"><h3>B — 柔光粒子</h3><p>紫色调渐变光点漂浮，安静优雅，符合当前紫色主题</p></div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="width:100%;aspect-ratio:4/3;background:#0f0f1a;border-radius:8px;overflow:hidden;position:relative;">
+        <div style="position:absolute;width:200px;height:200px;background:linear-gradient(135deg,rgba(120,80,200,0.2),rgba(80,60,180,0.05));border-radius:30% 70% 70% 30%/30% 30% 70% 70%;top:-10%;left:-10%;transform:rotate(15deg);"></div>
+        <div style="position:absolute;width:180px;height:180px;background:linear-gradient(225deg,rgba(100,80,200,0.15),rgba(60,40,160,0.05));border-radius:60% 40% 30% 70%/50% 40% 60% 50%;bottom:-5%;right:-10%;transform:rotate(-20deg);"></div>
+        <div style="position:absolute;width:100px;height:100px;border:1px solid rgba(150,120,220,0.1);border-radius:50%;top:40%;left:60%;"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:55%;aspect-ratio:9/16;background:white;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:9px;color:#333;">练笔小筑</div>
+      </div>
+    </div>
+    <div class="card-body"><h3>C — 抽象几何</h3><p>渐变 blob 形状缓慢移动旋转，现代简约有层次</p></div>
+  </div>
+
+  <div class="card" data-choice="d" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="width:100%;aspect-ratio:4/3;background:linear-gradient(180deg,#ede9fe,#faf5ff,#f5f3ff);border-radius:8px;overflow:hidden;position:relative;">
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(124,58,237,0.06),transparent 60%),radial-gradient(ellipse at 80% 70%,rgba(124,58,237,0.04),transparent 50%);"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:55%;aspect-ratio:9/16;background:white;border-radius:6px;box-shadow:0 4px 20px rgba(124,58,237,0.1);display:flex;align-items:center;justify-content:center;font-size:9px;color:#333;">练笔小筑</div>
+      </div>
+    </div>
+    <div class="card-body"><h3>D — 极简渐变</h3><p>静态淡紫渐变底色，不抢注意力，内容绝对突出</p></div>
+  </div>
+</div>

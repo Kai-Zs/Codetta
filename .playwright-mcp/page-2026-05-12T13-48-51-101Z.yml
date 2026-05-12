@@ -1,0 +1,52 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e8]:
+      - banner [ref=e9]:
+        - button [ref=e10]:
+          - img [ref=e11]
+        - generic [ref=e13]:
+          - generic [ref=e14]: "1.1"
+          - generic [ref=e15]: 已做 0/618
+          - generic [ref=e16]: 正确率 0%
+        - button "答题卡" [ref=e17]
+      - generic [ref=e19]:
+        - button "← 上一题" [disabled] [ref=e20]
+        - button "下一题 →" [ref=e21]
+      - generic [ref=e22]:
+        - generic [ref=e23]: 单选题
+        - heading "print函数end参数作用" [level=2] [ref=e24]
+        - generic [ref=e25]:
+          - text: 以下代码的输出结果是什么？
+          - text: print('Hello', end='')
+          - text: print('World')
+        - generic [ref=e26]:
+          - button "A. HelloWorld" [ref=e27]
+          - button "B. Hello World" [ref=e28]
+          - button "C. Hello World" [ref=e29]:
+            - generic [ref=e30]:
+              - text: C. Hello
+              - text: World
+          - button "D. WorldHello" [ref=e31]
+      - button "提交" [ref=e33]
+      - generic [ref=e34]:
+        - paragraph [ref=e35]:
+          - text: Powered by
+          - link "凯Z闪" [ref=e36] [cursor=pointer]:
+            - /url: https://kaizs.cn
+        - generic [ref=e37]:
+          - button [ref=e38]:
+            - img [ref=e39]
+          - button [ref=e41]:
+            - img [ref=e42]
+    - generic [ref=e49]:
+      - generic [ref=e50]:
+        - heading "知识点解析" [level=3] [ref=e51]
+        - button "✕" [ref=e53] [cursor=pointer]
+      - paragraph [ref=e56]: 点击「AI 知识点解析」按钮获取分析
+  - generic:
+    - paragraph:
+      - link "晋ICP备2026004314号-1" [ref=e47] [cursor=pointer]:
+        - /url: https://beian.miit.gov.cn/
+      - img
+      - link "晋公网安备14108102001175号" [ref=e48] [cursor=pointer]:
+        - /url: https://beian.mps.gov.cn/#/query/webSearch?code=14108102001175

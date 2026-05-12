@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>练笔小筑 — 编程题布局</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  .bg-base {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, #ede0ff 0%, #dce6ff 40%, #ffe4f0 70%, #e8e0ff 100%);
+    z-index: 0;
+  }
+
+  @keyframes slideUpRight { to { transform: translate(50px, -50px); } }
+  .pattern-layer {
+    position: fixed; inset: -100px; pointer-events: none; z-index: 1;
+    opacity: 0.22;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Ccircle cx='28' cy='28' r='2.5' fill='%237c3aed'/%3E%3Cpath d='M8 8l12 12M20 8L8 20' stroke='%23a78bfa' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M48 48l12 12M60 48l-12 12' stroke='%23a78bfa' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-size: 56px 56px;
+    animation: slideUpRight 7s linear infinite;
+  }
+
+  /* === 编程题时：手机左移，编辑器浮在右侧 === */
+  .layout {
+    position: relative; z-index: 10;
+    display: flex; align-items: flex-start; gap: 40px;
+  }
+
+  .phone-container {
+    width: 340px; max-width: 88vw;
+    aspect-ratio: 9 / 16;
+    max-height: 90vh;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 0 0 3px #d4c0f0, 0 0 0 5px #b8a0e0, 0 24px 80px rgba(100,40,180,0.15);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  .phone-statusbar {
+    height: 44px; background: #fff; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px;
+  }
+  .phone-statusbar .time { font-size: 12px; font-weight: 600; color: #1a1a2e; }
+
+  .phone-content { flex: 1; overflow-y: auto; background: #fff; padding: 16px 20px; }
+
+  .q-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .q-header .back { color: #999; font-size: 16px; }
+  .q-header .qnum { font-size: 13px; color: #999; }
+  .q-header .mode-toggle { font-size: 11px; color: #7c3aed; margin-left: auto; }
+  .q-header .stats { font-size: 11px; color: #aaa; }
+
+  .progress-bar-wrap { height: 3px; background: #f0ecff; border-radius: 2px; margin-bottom: 16px; }
+  .progress-bar-fill { height: 100%; width: 28%; background: #7c3aed; border-radius: 2px; }
+
+  .q-type-tag { display: inline-block; background: #f3edff; color: #7c3aed; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; }
+  .q-title { font-size: 16px; font-weight: 600; color: #1a1a2e; margin-bottom: 12px; line-height: 1.5; }
+
+  .q-options { display: flex; flex-direction: column; gap: 8px; }
+  .q-option {
+    padding: 14px 16px; background: #faf8ff; border: 1.5px solid #e8e0f8;
+    border-radius: 12px; font-size: 14px; color: #333;
+  }
+
+  .phone-footer { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-top: 1px solid #f5f0ff; }
+  .phone-footer .btns { display: flex; gap: 8px; }
+  .phone-footer button { padding: 10px 20px; border-radius: 12px; font-size: 14px; border: none; cursor: pointer; }
+  .btn-submit { background: #7c3aed; color: #fff; }
+
+  /* === 右侧编辑器浮层 === */
+  .editor-panel {
+    width: 480px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 16px 60px rgba(100,40,180,0.12);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    animation: fadeInLeft 0.35s ease-out;
+  }
+  @keyframes fadeInLeft {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .editor-header {
+    padding: 16px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid #f0ecff;
+  }
+  .editor-header h2 { font-size: 15px; color: #333; font-weight: 600; }
+  .editor-header .lang-tag { font-size: 11px; color: #7c3aed; background: #f3edff; padding: 3px 10px; border-radius: 4px; }
+
+  .editor-body {
+    flex: 1; min-height: 200px; padding: 16px 20px;
+  }
+  .editor-area {
+    width: 100%; height: 280px;
+    background: #1e1e2e; border-radius: 12px;
+    padding: 16px; color: #e0ddf0;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 13px; line-height: 1.7;
+    border: none; resize: none; outline: none;
+  }
+
+  .editor-footer {
+    padding: 12px 20px; border-top: 1px solid #f0ecff;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .editor-footer .hint { font-size: 11px; color: #aaa; }
+  .editor-footer button {
+    padding: 10px 28px; background: #7c3aed; color: #fff;
+    border: none; border-radius: 10px; font-size: 14px; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-base"></div>
+<div class="pattern-layer"></div>
+
+<div class="layout">
+  <!-- 手机：显示编程题题干 -->
+  <div class="phone-container">
+    <div class="phone-statusbar"><span class="time">9:41</span></div>
+    <div class="phone-content">
+      <div class="q-header">
+        <span class="back">←</span>
+        <span class="qnum">8.15</span>
+        <span class="mode-toggle">切顺序</span>
+        <span class="stats">已做 142/618</span>
+        <span class="stats">78%</span>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill"></div></div>
+      <span class="q-type-tag">编程题</span>
+      <div class="q-title">编写一个函数 fib(n)，返回斐波那契数列的第 n 项（n 从 0 开始）。要求使用递归实现。</div>
+    </div>
+    <div class="phone-footer">
+      <span></span>
+      <div class="btns">
+        <button class="btn-submit">提交</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右侧编辑器浮层 -->
+  <div class="editor-panel">
+    <div class="editor-header">
+      <h2>代码编辑器</h2>
+      <span class="lang-tag">Python</span>
+    </div>
+    <div class="editor-body">
+      <textarea class="editor-area" placeholder="在这里编写代码...">def fib(n):
+    if n <= 1:
+        return n
+    return fib(n-1) + fib(n-2)</textarea>
+    </div>
+    <div class="editor-footer">
+      <span class="hint">Ctrl+Enter 提交</span>
+      <button>提交判题</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

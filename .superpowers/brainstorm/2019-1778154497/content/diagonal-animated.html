@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html><head><style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:system-ui;background:#111;color:#fff;padding:24px;}
+h2{font-size:20px;text-align:center;margin-bottom:4px;}
+.subtitle{text-align:center;color:#999;font-size:13px;margin-bottom:24px;}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1100px;margin:0 auto;}
+.card{border-radius:12px;overflow:hidden;border:1px solid #2a2a2a;background:#1a1a1a;}
+.card-image{position:relative;aspect-ratio:4/3;overflow:hidden;}
+.card-body{padding:12px 14px;}
+.card-body h3{font-size:14px;margin-bottom:2px;}
+.card-body p{font-size:12px;color:#999;}
+
+/* A: 斜向点线 */
+.bg-a{background:#faf8ff;}
+@keyframes slideA{to{background-position:34px 34px;}}
+.pat-a{width:100%;height:100%;background-image:radial-gradient(circle at center,rgba(124,58,237,0.18) 1px,transparent 1px),radial-gradient(circle at center,rgba(124,58,237,0.1) 1.5px,transparent 1.5px);background-size:24px 24px,48px 48px;background-position:0 0,12px 12px;animation:slideA 3s linear infinite;}
+
+/* B: 斜向方块 */
+.bg-b{background:#faf8ff;}
+@keyframes slideB{to{background-position:51px 51px;}}
+.pat-b{width:100%;height:100%;background-image:linear-gradient(45deg,rgba(124,58,237,0.06) 25%,transparent 25%,transparent 75%,rgba(124,58,237,0.06) 75%),linear-gradient(45deg,rgba(124,58,237,0.1) 25%,transparent 25%,transparent 75%,rgba(124,58,237,0.1) 75%);background-size:36px 36px,36px 36px;background-position:0 0,18px 18px;animation:slideB 4s linear infinite;}
+
+/* C: 斜向圆点渐变 */
+.bg-c{background:#faf8ff;}
+@keyframes slideC{to{background-position:0 56px,28px 84px,56px 28px;}}
+.pat-c{width:100%;height:100%;background-image:radial-gradient(rgba(124,58,237,0.15) 2px,transparent 2px),radial-gradient(rgba(124,58,237,0.1) 1.5px,transparent 1.5px),radial-gradient(rgba(124,58,237,0.08) 1px,transparent 1px);background-size:28px 28px,40px 40px,56px 56px;background-position:0 0,14px 14px,28px 28px;animation:slideC 5s linear infinite;}
+
+.phone{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50%;aspect-ratio:9/16;background:white;border-radius:10px;box-shadow:0 4px 24px rgba(124,58,237,0.08);display:flex;align-items:center;justify-content:center;font-size:11px;color:#333;border:1px solid rgba(0,0,0,0.04);z-index:1;}
+</style></head><body>
+
+<h2>斜向运动图案 — 三种风格</h2>
+<p class="subtitle">图案沿对角线方向匀速移动，年轻现代感</p>
+
+<div class="cards">
+  <div class="card">
+    <div class="card-image bg-a"><div class="pat-a"></div><div class="phone">练笔小筑</div></div>
+    <div class="card-body"><h3>A — 斜向点线</h3><p>双层圆点45°匀速斜移，经典百搭</p></div>
+  </div>
+  <div class="card">
+    <div class="card-image bg-b"><div class="pat-b"></div><div class="phone">练笔小筑</div></div>
+    <div class="card-body"><h3>B — 斜向条纹</h3><p>细条纹斜移，节奏感强，有速度感</p></div>
+  </div>
+  <div class="card">
+    <div class="card-image bg-c"><div class="pat-c"></div><div class="phone">练笔小筑</div></div>
+    <div class="card-body"><h3>C — 斜向圆点</h3><p>三层渐变圆点斜移，轻盈有层次</p></div>
+  </div>
+</div>
+
+</body></html>

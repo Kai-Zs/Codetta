@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KaiZs's Home</title>
+    <meta name="description" content="KaiZs's Home">
+    <link rel="icon" type="image/ico" href="./static/assets/1.webp">
+
+    <!-- 引入外部CSS -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./static/css/style.css?v=2.0">
+    <link rel="stylesheet" href="./static/lib/APlayer-1.10.1/dist/APlayer.min.css">
+    <style>
+        a {
+            text-decoration: none;
+            color: #87CEEB;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            position: relative;
+            font-weight: 500;
+            outline: none;
+        }
+
+        a:hover {
+            color: #2c7da0;
+            transform: translateY(-2px);
+            text-shadow: 0 2px 6px rgba(44, 125, 160, 0.2);
+        }
+
+        a:active {
+            transform: translateY(1px);
+            transition: 0.05s;
+        }
+
+        a:focus-visible {
+            outline: 2px solid #87CEEB;
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 粒子背景容器 -->
+    <div id="particles-js"></div>
+
+    <!-- 主容器 -->
+    <div id="main" class="main-container">
+        <!-- 主卡片 -->
+        <div class="main-card fade-in">
+            <!-- 标题部分 -->
+            <header class="header-section">
+                <h1 class="main-title">KaiZs's Home</h1>
+                <p id="hitokoto" class="hitokoto-text">
+                    <a href="#" id="hitokoto_text" class="hitokoto-link">:D 获取中...</a>
+                </p>
+            </header>
+
+            <!-- 个人介绍 -->
+            <section class="intro-section">
+                <p class="intro-text">
+                    很高兴你能访问我的网站！<br>
+                    你好，今天又是开心且充实的一天呢！你过得怎么样啊？: )<br>
+                    目前我仍在努力学习中，励志向着目标前行!<br>
+                    请一起努力吧！
+                </p>
+            </section>
+
+            <!-- 音乐播放器 -->
+            <section class="music-section">
+                <div id="aplayer-inner" class="aplayer"></div>
+            </section>
+
+            <!-- 社交媒体链接 -->
+            <section class="social-section">
+                <div class="social">
+                    <ul>
+                        <li><a href="https://github.com/Kai-Zs" target="_blank" title="GitHub"
+                                class="social-link"><i class="fab fa-github"></i></a></li>
+                        <li><a href="https://space.bilibili.com/426196413" target="_blank" title="Bilibili"
+                                class="social-link"><i class="fab fa-bilibili"></i></a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 页脚 -->
+            <footer class="footer-section">
+                <p>© Copyright 2023-2026 KaiZs.cn 版权所有。<br>
+                    <a href="https://beian.miit.gov.cn/" target="_blank">晋ICP备2026004314号-1</a><br>
+                    <img src="./static/assets/备案.png" width="16" height="16"><a
+                        href="https://beian.mps.gov.cn/#/query/webSearch?code=14108102001175" rel="noreferrer"
+                        target="_blank">晋公网安备14108102001175号</a><br>
+                    Powered by KaiZs<br>
+                    本站已运行 <span id="run-time">0天0小时0分0秒 ✨ </span>
+                </p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- 音乐播放器配置 -->
+    <script>
+        // 音乐设置
+        let meting_music_api = "https://api.injahow.cn/meting/";
+        let music_server = "netease";
+        let music_type = "playlist";
+        let music_id = "985597258";
+        let music_order = "list";
+        let music_mini = false;
+        let music_fixed = false;
+        let music_volume = 0.7;
+        let music_autoplay = false;
+        let music_loop = "all";
+    </script>
+
+    <!-- 引入外部JavaScript -->
+    <script src="./static/js/particles.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="./static/lib/APlayer-1.10.1/dist/APlayer.min.js"></script>
+    <script src="./static/lib/Meting.min.js"></script>
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="./static/lib/layer-v3.5.1/layer/layer.js"></script>
+
+    <!-- 一言功能 -->
+    <script>
+        fetch('https://v1.hitokoto.cn/?c=i')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('hitokoto_text').innerText = data.hitokoto;
+            })
+            .catch(console.error);
+    </script>
+
+    <!-- particles.js 配置 -->
+    <script>
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 100,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#87CEEB"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    }
+                },
+                "opacity": {
+                    "value": 0.6,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#87CEEB",
+                    "opacity": 0.3,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 2,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "window",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "repulse"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 400,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 120,
+                        "duration": 0.6
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+    </script>
+
+    <script src="./static/js/main.js"></script>
+
+    <!-- 网站运行时间计算 -->
+    <script>
+        function updateRunTime() {
+            // 建站时间：2023年11月11日
+            const createTime = new Date('2023-11-11 00:00:00');
+            const currentTime = new Date();
+            const timeDiff = currentTime - createTime;
+            
+            // 计算天、小时、分钟、秒
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+            
+            // 更新显示
+            document.getElementById('run-time').textContent = days + '天' + hours + '小时' + minutes + '分' + seconds + '秒';
+        }
+        
+        // 初始更新
+        updateRunTime();
+        // 每秒更新一次
+        setInterval(updateRunTime, 1000);
+    </script>
+</body>
+
+</html>
