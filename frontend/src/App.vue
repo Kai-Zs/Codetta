@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center" :class="kpStore.aiOpen ? 'overflow-y-hidden' : 'overflow-hidden'">
+  <div class="min-h-screen flex items-center justify-center" :class="{ 'overflow-hidden': !kpStore.aiOpen }">
     <BackgroundLayer />
     <!-- 管理后台 -->
     <router-view v-if="isAdmin" />
@@ -15,18 +15,15 @@
         class="kp-app-trigger"
         @click="kpStore.open(currentQuestionId, null)"
       >知识点解析</button>
-      <div v-if="kpStore.aiOpen" style="width:400px;min-width:400px;flex-shrink:0;background:red;color:#fff;padding:20px;border-radius:12px;">
-        <p>PANEL OPEN — loading: {{ kpStore.aiLoading }}, error: {{ kpStore.aiError }}</p>
-        <button @click="kpStore.close()" style="background:#fff;color:red;padding:4px 12px;border-radius:4px;">CLOSE</button>
-        <AiKpPanel
-          :content="kpStore.aiContent"
-          :loading="kpStore.aiLoading"
-          :error="kpStore.aiError"
-          @close="kpStore.close()"
-          @reanalyze="onReanalyze"
-          @chat="onChat"
-        />
-      </div>
+      <AiKpPanel
+        v-if="kpStore.aiOpen"
+        :content="kpStore.aiContent"
+        :loading="kpStore.aiLoading"
+        :error="kpStore.aiError"
+        @close="kpStore.close()"
+        @reanalyze="onReanalyze"
+        @chat="onChat"
+      />
     </div>
     <!-- 备案信息 -->
     <div class="fixed bottom-0 left-0 right-0 z-0 pb-1.5 text-center pointer-events-none">
