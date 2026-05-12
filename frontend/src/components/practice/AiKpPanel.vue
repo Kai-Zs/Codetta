@@ -85,6 +85,29 @@ import DOMPurify from 'dompurify'
 
 marked.setOptions({ breaks: true, gfm: true })
 
+const mdRenderer = new marked.Renderer()
+
+// 代码块添加语言标签
+mdRenderer.code = function (code, language) {
+  const lang = language && hljs.getLanguage(language) ? language : ''
+  const langLabel = lang ? `<span class="kp-code-lang">${lang}</span>` : ''
+  const highlighted = lang
+    ? hljs.highlight(code, { language: lang }).value
+    : hljs.highlightAuto(code).value
+  return `<pre>${langLabel}<code class="hljs${lang ? ' language-' + lang : ''}">${highlighted}</code></pre>`
+}
+
+// 链接在新标签页打开
+mdRenderer.link = function (href, title, text) {
+  const titleAttr = title ? ` title="${title}"` : ''
+  return `<a href="${href}" target="_blank" rel="noopener noreferrer"${titleAttr}>${text}</a>`
+}
+
+// 表格优化
+mdRenderer.table = function (header, body) {
+  return `<div class="kp-table-wrap"><table><thead>${header}</thead><tbody>${body}</tbody></table></div>`
+}
+
 function renderMd(text) {
   let html = text.replace(/\$\$([\s\S]*?)\$\$/g, (_, formula) => {
     try { return katex.renderToString(formula.trim(), { displayMode: true, throwOnError: false }) }
@@ -94,8 +117,8 @@ function renderMd(text) {
     try { return katex.renderToString(formula.trim(), { displayMode: false, throwOnError: false }) }
     catch { return formula }
   })
-  const mdHtml = marked.parse(html)
-  return DOMPurify.sanitize(mdHtml, { ADD_ATTR: ['target'] })
+  const mdHtml = marked.parse(html, { renderer: mdRenderer })
+  return DOMPurify.sanitize(mdHtml, { ADD_ATTR: ['target'], ADD_DATA_URI_TOKENS: ['href'] })
 }
 
 const props = defineProps({
@@ -289,36 +312,112 @@ watch(() => props.content, () => {
 </style>
 
 <style>
-/* markdown 渲染（非 scoped，作用于 v-html 内容） */
-.kp-msg-body pre, .kp-markdown pre {
-  background: #1f2937; color: #e5e7eb; padding: 12px; border-radius: 8px;
-  overflow-x: auto; font-size: 12px; margin: 8px 0;
+/* ===== markdown 渲染全局样式 ===== */
+
+/* 代码块 */
+.kp-msg-body pre {
+  background: #1f2937; color: #e5e7eb; padding: 14px 16px; border-radius: 8px;
+  overflow-x: auto; font-size: 12px; line-height: 1.6; margin: 10px 0;
+  position: relative;
   transition: background 0.3s ease;
 }
-.dark .kp-msg-body pre, .dark .kp-markdown pre { background: #0d1117; }
-.kp-msg-body code, .kp-markdown code { font-size: 12px; }
-.kp-msg-body p code, .kp-markdown p code {
-  background: #f3f4f6; color: #374151; padding: 2px 5px; border-radius: 4px;
+.dark .kp-msg-body pre { background: #0d1117; }
+
+/* 代码语言标签 */
+.kp-code-lang {
+  position: absolute; top: 0; right: 0; padding: 2px 8px;
+  font-size: 10px; color: #9ca3af; background: rgba(255,255,255,0.08);
+  border-radius: 0 8px 0 6px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* 表格容器（溢出滚动） */
+.kp-table-wrap { overflow-x: auto; margin: 10px 0; }
+
+.kp-msg-body code { font-size: 12px; font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace; }
+
+/* 行内代码 */
+.kp-msg-body :not(pre) > code {
+  background: #f3f4f6; color: #7c3aed; padding: 2px 6px; border-radius: 4px;
+  font-size: 12px; white-space: nowrap;
   transition: background 0.3s ease, color 0.3s ease;
 }
-.dark .kp-msg-body p code, .dark .kp-markdown p code { background: #374151; color: #e5e7eb; }
-.kp-msg-body table, .kp-markdown table { width: 100%; border-collapse: collapse; }
-.kp-msg-body th, .kp-msg-body td, .kp-markdown th, .kp-markdown td {
-  border: 1px solid #e5e7eb; padding: 6px 8px; font-size: 12px;
+.dark .kp-msg-body :not(pre) > code { background: #374151; color: #c4b5fd; }
+
+/* 标题 */
+.kp-msg-body h1 { font-size: 18px; font-weight: 700; margin: 20px 0 10px; color: #1a1a2e; transition: color 0.3s ease; }
+.kp-msg-body h2 { font-size: 16px; font-weight: 600; margin: 16px 0 8px; color: #1a1a2e; transition: color 0.3s ease; }
+.kp-msg-body h3 { font-size: 14px; font-weight: 600; margin: 14px 0 6px; color: #1a1a2e; transition: color 0.3s ease; }
+.kp-msg-body h4 { font-size: 13px; font-weight: 600; margin: 12px 0 4px; color: #374151; transition: color 0.3s ease; }
+.dark .kp-msg-body h1, .dark .kp-msg-body h2, .dark .kp-msg-body h3 { color: #e2e8f0; }
+.dark .kp-msg-body h4 { color: #cbd5e1; }
+
+/* 段落 */
+.kp-msg-body p { margin-bottom: 8px; }
+
+/* 链接 */
+.kp-msg-body a {
+  color: #7c3aed; text-decoration: underline; text-underline-offset: 2px;
+  transition: color 0.3s ease;
+}
+.kp-msg-body a:hover { color: #6d28d9; }
+.dark .kp-msg-body a { color: #a78bfa; }
+.dark .kp-msg-body a:hover { color: #c4b5fd; }
+
+/* 列表 */
+.kp-msg-body ul, .kp-msg-body ol { padding-left: 22px; margin: 6px 0 10px; }
+.kp-msg-body li { margin-bottom: 4px; }
+.kp-msg-body li > ul, .kp-msg-body li > ol { margin-top: 4px; margin-bottom: 0; }
+
+/* 任务列表 */
+.kp-msg-body input[type="checkbox"] {
+  margin-right: 6px; accent-color: #8b5cf6; vertical-align: middle;
+}
+
+/* 引用块 */
+.kp-msg-body blockquote {
+  border-left: 3px solid #8b5cf6; padding: 6px 12px; margin: 10px 0;
+  background: #f9fafb; color: #6b7280; border-radius: 0 6px 6px 0;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.dark .kp-msg-body blockquote { background: #1f2937; color: #9ca3af; border-color: #6d28d9; }
+.kp-msg-body blockquote p { margin-bottom: 4px; }
+
+/* 表格 */
+.kp-msg-body table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+.kp-msg-body th, .kp-msg-body td {
+  border: 1px solid #e5e7eb; padding: 8px 10px; text-align: left;
   transition: border-color 0.3s ease;
 }
-.dark .kp-msg-body th, .dark .kp-msg-body td,
-.dark .kp-markdown th, .dark .kp-markdown td { border-color: #2d2d4a; }
-.kp-msg-body th, .kp-markdown th { background: #f9fafb; transition: background 0.3s ease; }
-.dark .kp-msg-body th, .dark .kp-markdown th { background: #1f2937; }
-.kp-msg-body h2, .kp-msg-body h3, .kp-markdown h2, .kp-markdown h3 {
-  color: #1a1a2e; transition: color 0.3s ease;
+.dark .kp-msg-body th, .dark .kp-msg-body td { border-color: #2d2d4a; }
+.kp-msg-body th { background: #f9fafb; font-weight: 600; color: #374151; transition: background 0.3s ease, color 0.3s ease; }
+.dark .kp-msg-body th { background: #1f2937; color: #e5e7eb; }
+.kp-msg-body tr:nth-child(even) td { background: #f9fafb; transition: background 0.3s ease; }
+.dark .kp-msg-body tr:nth-child(even) td { background: #0f172a; }
+.kp-msg-body tr:hover td { background: #f3f4f6; transition: background 0.15s ease; }
+.dark .kp-msg-body tr:hover td { background: #1e293b; }
+
+/* 分割线 */
+.kp-msg-body hr {
+  border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;
+  transition: border-color 0.3s ease;
 }
-.dark .kp-msg-body h2, .dark .kp-msg-body h3,
-.dark .kp-markdown h2, .dark .kp-markdown h3 { color: #e2e8f0; }
-.kp-msg-body h2, .kp-markdown h2 { font-size: 15px; margin: 14px 0 6px; }
-.kp-msg-body h3, .kp-markdown h3 { font-size: 14px; margin: 12px 0 4px; }
-.kp-msg-body ul, .kp-msg-body ol, .kp-markdown ul, .kp-markdown ol { padding-left: 18px; }
-.kp-msg-body li, .kp-markdown li { margin-bottom: 4px; }
-.kp-msg-body p, .kp-markdown p { margin-bottom: 8px; }
+.dark .kp-msg-body hr { border-color: #2d2d4a; }
+
+/* 图片 */
+.kp-msg-body img {
+  max-width: 100%; border-radius: 8px; margin: 8px 0;
+}
+
+/* 强调 */
+.kp-msg-body strong { font-weight: 600; color: #1a1a2e; transition: color 0.3s ease; }
+.dark .kp-msg-body strong { color: #f1f5f9; }
+
+/* 键盘标签 */
+.kp-msg-body kbd {
+  background: #f3f4f6; border: 1px solid #d1d5db; border-bottom-width: 2px;
+  border-radius: 4px; padding: 1px 5px; font-size: 11px; font-family: monospace;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.dark .kp-msg-body kbd { background: #1f2937; border-color: #4b5563; color: #e5e7eb; }
 </style>
