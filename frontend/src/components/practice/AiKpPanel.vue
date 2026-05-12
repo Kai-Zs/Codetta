@@ -10,7 +10,7 @@
     </div>
 
     <!-- 对话流（可滚动） -->
-    <div class="kp-conversation" ref="convRef">
+    <div class="kp-conversation kp-scroll" ref="convRef">
       <!-- 加载态 -->
       <div v-if="loading" class="kp-state">
         <div class="kp-skeleton">
@@ -387,6 +387,12 @@ onBeforeUnmount(() => { twStop() })
 </style>
 
 <style>
+/* 滚动条 — 与手机壳同款 */
+.kp-scroll::-webkit-scrollbar { width: 4px; }
+.kp-scroll::-webkit-scrollbar-track { background: transparent; }
+.kp-scroll::-webkit-scrollbar-thumb { background: #d4c0f0; border-radius: 2px; }
+.dark .kp-scroll::-webkit-scrollbar-thumb { background: #3a3050; }
+
 /* ===== markdown 渲染全局样式 ===== */
 
 /* 代码块 */
