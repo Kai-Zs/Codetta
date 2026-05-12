@@ -52,7 +52,7 @@ def judge_code(question_id: int, user_code: str) -> dict:
         resp = client.post(
             "https://api.deepseek.com/v1/chat/completions",
             headers={"Authorization": f"Bearer {DEEPSEEK_API_KEY}", "Content-Type": "application/json"},
-            json={"model": "deepseek-chat", "messages": [{"role": "user", "content": prompt}], "temperature": 0},
+            json={"model": "deepseek-v4-flash", "messages": [{"role": "user", "content": prompt}], "temperature": 0},
         )
     if resp.status_code != 200:
         raise ValueError(f"DeepSeek API 错误: {resp.status_code}")
