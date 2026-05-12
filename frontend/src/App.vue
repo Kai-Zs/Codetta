@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex flex-col items-center justify-start pt-16 pb-8" :class="{ 'overflow-hidden': !kpStore.aiOpen }">
+  <div class="min-h-screen flex items-start justify-center pt-16 pb-8" :class="{ 'overflow-hidden': !kpStore.aiOpen }">
     <BackgroundLayer />
     <!-- 管理后台 -->
     <router-view v-if="isAdmin" />
@@ -26,7 +26,7 @@
       />
     </div>
     <!-- 备案信息 -->
-    <div class="relative z-10 pt-4 pb-1.5 text-center">
+    <div class="fixed bottom-0 left-0 right-0 z-0 pb-1.5 text-center pointer-events-none">
       <p class="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
         <a href="https://beian.miit.gov.cn/" target="_blank" class="pointer-events-auto hover:text-gray-500 dark:hover:text-gray-400 transition">晋ICP备2026004314号-1</a>
         &nbsp;
