@@ -1,33 +1,33 @@
 <template>
   <div class="flex flex-col flex-1 relative">
-    <!-- 顶栏 -->
-    <header class="flex justify-between items-center px-3 py-2">
-      <button @click="$router.back()" class="text-gray-400 dark:text-gray-500 p-1">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-      </button>
-      <div class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
-        <span>{{ question?.q_number }}</span>
-        <span v-if="!isFromWrong">已做 {{ progress.done }}/{{ progress.total }}</span>
-        <span v-if="!isFromWrong && store.mode !== 'filter'">正确率 {{ progress.accuracy }}%</span>
-      </div>
-      <button @click="showSheet = true" class="text-sm text-purple font-medium">答题卡</button>
-    </header>
-
-    <!-- 进度条 -->
-    <div class="h-1 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden"><div class="h-full bg-purple dark:bg-purple/80 transition-all duration-300 rounded-full" :style="{ width: progressPercent + '%' }" /></div>
-
-    <!-- 翻页 -->
-    <div class="flex justify-between px-4 py-1.5">
-      <button @click="prevQuestion" :disabled="!hasPrev"
-        class="text-xs text-gray-400 dark:text-gray-500 disabled:opacity-30">← 上一题</button>
-      <button @click="nextQuestion" :disabled="!hasNext"
-        class="text-xs text-gray-400 disabled:opacity-30">下一题 →</button>
-    </div>
-
     <!-- 手机壳 + AI面板 整体居中行 -->
     <div class="kp-main-row" :class="{ 'kp-expanded': aiOpen }">
-      <!-- 手机壳区域 -->
+      <!-- 手机壳区域（含全部内容） -->
       <div class="kp-phone-area">
+        <!-- 顶栏 -->
+        <header class="flex justify-between items-center px-3 py-2">
+          <button @click="$router.back()" class="text-gray-400 dark:text-gray-500 p-1">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <div class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
+            <span>{{ question?.q_number }}</span>
+            <span v-if="!isFromWrong">已做 {{ progress.done }}/{{ progress.total }}</span>
+            <span v-if="!isFromWrong && store.mode !== 'filter'">正确率 {{ progress.accuracy }}%</span>
+          </div>
+          <button @click="showSheet = true" class="text-sm text-purple font-medium">答题卡</button>
+        </header>
+
+        <!-- 进度条 -->
+        <div class="h-1 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden flex-shrink-0"><div class="h-full bg-purple dark:bg-purple/80 transition-all duration-300 rounded-full" :style="{ width: progressPercent + '%' }" /></div>
+
+        <!-- 翻页 -->
+        <div class="flex justify-between px-4 py-1.5">
+          <button @click="prevQuestion" :disabled="!hasPrev"
+            class="text-xs text-gray-400 dark:text-gray-500 disabled:opacity-30">← 上一题</button>
+          <button @click="nextQuestion" :disabled="!hasNext"
+            class="text-xs text-gray-400 disabled:opacity-30">下一题 →</button>
+        </div>
+
         <!-- 题目区域 -->
         <div class="flex-1 px-4 pb-4 overflow-y-auto">
           <LoadingSpinner v-if="loading" />
@@ -479,28 +479,30 @@ onMounted(async () => {
 <style scoped>
 .kp-main-row {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: center;
   flex: 1;
   overflow: hidden;
-  gap: 0;
-  transition: gap 0.3s ease;
-}
-.kp-main-row.kp-expanded {
-  gap: 12px;
+  padding: 0 12px;
+  gap: 8px;
 }
 .kp-phone-area {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  max-width: 520px;
-  min-width: 280px;
+  width: 100%;
+  max-width: 500px;
+  min-width: 0;
   min-height: 0;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+.kp-expanded .kp-phone-area {
+  /* 面板打开时手机壳不再自动占满，保持固定宽度 */
 }
 .kp-trigger-btn {
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  padding: 14px 8px;
+  padding: 12px 6px;
   border-radius: 8px;
   border: 1px solid #c4b5fd;
   background: #ede9fe;
@@ -510,12 +512,14 @@ onMounted(async () => {
   cursor: pointer;
   transition: background 0.2s;
   white-space: nowrap;
-  align-self: stretch;
-  min-height: 160px;
   flex-shrink: 0;
+  align-self: center;
+  min-height: 140px;
+  max-height: 300px;
+  user-select: none;
 }
 .kp-trigger-btn:hover { background: #ddd6fe; }
-.kp-trigger-text { display: inline-block; }
+.kp-trigger-text { display: inline-block; letter-spacing: 2px; }
 </style>
 
 <style>
@@ -526,5 +530,14 @@ onMounted(async () => {
 }
 .dark .kp-trigger-btn:hover {
   background: #312e81;
+}
+.kp-trigger-btn {
+  min-height: 140px;
+}
+@media (min-height: 700px) {
+  .kp-trigger-btn { min-height: 200px; }
+}
+@media (min-height: 900px) {
+  .kp-trigger-btn { min-height: 280px; }
 }
 </style>
