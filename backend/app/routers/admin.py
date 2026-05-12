@@ -104,3 +104,18 @@ def reload_seed():
         return {"ok": True}
     except Exception as e:
         raise HTTPException(500, f"重载失败: {str(e)[:100]}")
+
+
+@router.get("/kp-access", dependencies=[Depends(verify_admin)])
+def list_kp_access(search: str = Query("")):
+    return {"items": svc.list_kp_access(search)}
+
+
+@router.post("/kp-access", dependencies=[Depends(verify_admin)])
+def set_kp_access(body: dict):
+    student_id = body.get("student_id", "")
+    enabled = body.get("enabled", False)
+    if not student_id:
+        raise HTTPException(400, "student_id 必填")
+    svc.set_kp_access(student_id, enabled)
+    return {"ok": True}

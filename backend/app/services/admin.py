@@ -218,3 +218,39 @@ def reload_seed() -> None:
     import sys
     seed_path = os.path.join(BASE_DIR, "seed", "seed.py")
     subprocess.run([sys.executable, seed_path], cwd=BASE_DIR, check=True)
+
+
+def list_kp_access(search: str = "") -> list[dict]:
+    from .knowledge_point import get_kp_db
+
+    with get_db() as db:
+        where = "WHERE student_id LIKE ? OR name LIKE ?" if search else ""
+        params = [f"%{search}%", f"%{search}%"] if search else []
+        users = db.execute(
+            f"SELECT student_id, name FROM users {where} ORDER BY id",
+            params,
+        ).fetchall()
+
+    with get_kp_db() as kdb:
+        kp_rows = kdb.execute("SELECT student_id, enabled FROM kp_access").fetchall()
+    kp_map = {r["student_id"]: r["enabled"] for r in kp_rows}
+
+    result = []
+    for u in users:
+        sid = u["student_id"]
+        result.append({
+            "student_id": sid,
+            "name": u["name"],
+            "kp_enabled": bool(kp_map.get(sid, 0)),
+        })
+    return result
+
+
+def set_kp_access(student_id: str, enabled: bool):
+    from .knowledge_point import get_kp_db
+
+    with get_kp_db() as kdb:
+        kdb.execute(
+            "INSERT OR REPLACE INTO kp_access (student_id, enabled) VALUES (?,?)",
+            (student_id, 1 if enabled else 0),
+        )
