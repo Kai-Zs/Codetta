@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center overflow-hidden">
+  <div class="min-h-screen flex items-center justify-center" :class="kpStore.aiOpen ? 'overflow-y-hidden' : 'overflow-hidden'">
     <BackgroundLayer />
     <!-- 管理后台独立布局，不走手机壳 -->
     <router-view v-if="isAdmin" />
