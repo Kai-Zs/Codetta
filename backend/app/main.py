@@ -4,10 +4,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from .routers import auth, questions, progress, judge, export, admin
+from .routers import auth, questions, progress, judge, export, admin, knowledge_point
+from .services.knowledge_point import init_kp_db
 from .services.admin import get_maintenance_status
 
 app = FastAPI(title="Codetta API", version="0.1.0")
+
+@app.on_event("startup")
+def startup():
+    init_kp_db()
 
 app.add_middleware(
     CORSMiddleware,
@@ -22,6 +27,7 @@ app.include_router(progress.router)
 app.include_router(judge.router)
 app.include_router(export.router)
 app.include_router(admin.router)
+app.include_router(knowledge_point.router)
 
 
 @app.get("/api/health")
