@@ -1,36 +1,30 @@
 <template>
   <div class="min-h-screen flex items-center justify-center" :class="kpStore.aiOpen ? 'overflow-y-hidden' : 'overflow-hidden'">
     <BackgroundLayer />
-    <!-- 管理后台独立布局，不走手机壳 -->
+    <!-- 管理后台 -->
     <router-view v-if="isAdmin" />
-    <template v-else>
-      <!-- 手机壳 + AI 面板 整体居中 -->
-      <div class="kp-app-row" :class="{ 'kp-app-row--open': kpStore.aiOpen }">
-        <div :class="['phone-wrapper', { 'phone-wrapper--editor': hasEditor }]">
-          <PhoneShell>
-            <router-view />
-          </PhoneShell>
-        </div>
-        <!-- AI 触发按钮（手机壳外右侧） -->
-        <button
-          v-if="kpStore.kpEnabled && !kpStore.aiOpen && isPractice"
-          class="kp-app-trigger"
-          @click="kpStore.open(currentQuestionId, null)"
-        >
-          <span class="kp-app-trigger-text">知识点解析</span>
-        </button>
-        <!-- AI 面板（手机壳外右侧） -->
-        <AiKpPanel
-          v-if="kpStore.aiOpen"
-          :content="kpStore.aiContent"
-          :loading="kpStore.aiLoading"
-          :error="kpStore.aiError"
-          @close="kpStore.close()"
-          @reanalyze="onReanalyze"
-          @chat="onChat"
-        />
+    <!-- 普通页面：手机壳 + AI面板 -->
+    <div v-if="!isAdmin" class="kp-app-row" :class="{ 'kp-app-row--open': kpStore.aiOpen }">
+      <div :class="['phone-wrapper', { 'phone-wrapper--editor': hasEditor }]">
+        <PhoneShell>
+          <router-view />
+        </PhoneShell>
       </div>
-    </template>
+      <button
+        v-if="kpStore.kpEnabled && !kpStore.aiOpen && isPractice"
+        class="kp-app-trigger"
+        @click="kpStore.open(currentQuestionId, null)"
+      >知识点解析</button>
+      <AiKpPanel
+        v-if="kpStore.aiOpen"
+        :content="kpStore.aiContent"
+        :loading="kpStore.aiLoading"
+        :error="kpStore.aiError"
+        @close="kpStore.close()"
+        @reanalyze="onReanalyze"
+        @chat="onChat"
+      />
+    </div>
     <!-- 备案信息 -->
     <div class="fixed bottom-0 left-0 right-0 z-0 pb-1.5 text-center pointer-events-none">
       <p class="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
@@ -93,20 +87,22 @@ onMounted(() => {
   gap: 8px;
 }
 .kp-app-trigger {
+  position: relative;
+  z-index: 999;
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  padding: 12px 6px;
+  padding: 14px 8px;
   border-radius: 8px;
-  border: 1px solid #c4b5fd;
+  border: 2px solid #7c3aed;
   background: #ede9fe;
   color: #7c3aed;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
   white-space: nowrap;
   flex-shrink: 0;
   min-height: 140px;
+  max-height: 65vh;
   align-self: stretch;
 }
 .kp-app-trigger:hover { background: #ddd6fe; }
@@ -115,11 +111,11 @@ onMounted(() => {
 
 <style>
 .dark .kp-app-trigger {
-  background: #1e1b4b;
-  border-color: #6d28d9;
-  color: #a78bfa;
+  background: #2d1b69;
+  border-color: #a78bfa;
+  color: #c4b5fd;
 }
-.dark .kp-app-trigger:hover { background: #312e81; }
+.dark .kp-app-trigger:hover { background: #3b2682; }
 @media (min-height: 700px) { .kp-app-trigger { min-height: 200px; } }
 @media (min-height: 900px) { .kp-app-trigger { min-height: 280px; } }
 </style>
