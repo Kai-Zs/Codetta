@@ -85,40 +85,39 @@ import DOMPurify from 'dompurify'
 
 marked.setOptions({ breaks: true, gfm: true })
 
-const mdRenderer = new marked.Renderer()
-
-// 代码块添加语言标签
-mdRenderer.code = function (code, language) {
-  const lang = language && hljs.getLanguage(language) ? language : ''
-  const langLabel = lang ? `<span class="kp-code-lang">${lang}</span>` : ''
-  const highlighted = lang
-    ? hljs.highlight(code, { language: lang }).value
-    : hljs.highlightAuto(code).value
-  return `<pre>${langLabel}<code class="hljs${lang ? ' language-' + lang : ''}">${highlighted}</code></pre>`
-}
-
-// 链接在新标签页打开
-mdRenderer.link = function (href, title, text) {
-  const titleAttr = title ? ` title="${title}"` : ''
-  return `<a href="${href}" target="_blank" rel="noopener noreferrer"${titleAttr}>${text}</a>`
-}
-
-// 表格优化
-mdRenderer.table = function (header, body) {
-  return `<div class="kp-table-wrap"><table><thead>${header}</thead><tbody>${body}</tbody></table></div>`
-}
-
 function renderMd(text) {
-  let html = text.replace(/\$\$([\s\S]*?)\$\$/g, (_, formula) => {
-    try { return katex.renderToString(formula.trim(), { displayMode: true, throwOnError: false }) }
-    catch { return `<pre>${formula}</pre>` }
-  })
-  html = html.replace(/\$([^$]+?)\$/g, (_, formula) => {
-    try { return katex.renderToString(formula.trim(), { displayMode: false, throwOnError: false }) }
-    catch { return formula }
-  })
-  const mdHtml = marked.parse(html, { renderer: mdRenderer })
-  return DOMPurify.sanitize(mdHtml, { ADD_ATTR: ['target'], ADD_DATA_URI_TOKENS: ['href'] })
+  try {
+    // KaTeX 公式
+    let html = text.replace(/\$\$([\s\S]*?)\$\$/g, (_, f) => {
+      try { return katex.renderToString(f.trim(), { displayMode: true, throwOnError: false }) }
+      catch { return `<pre>${f}</pre>` }
+    })
+    html = html.replace(/\$([^$]+?)\$/g, (_, f) => {
+      try { return katex.renderToString(f.trim(), { displayMode: false, throwOnError: false }) }
+      catch { return f }
+    })
+
+    // Markdown → HTML
+    let mdHtml = marked.parse(html)
+
+    // 代码高亮后处理
+    mdHtml = mdHtml.replace(/<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g, (_, lang, code) => {
+      const unescaped = code.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"')
+      const valid = hljs.getLanguage(lang)
+      const highlighted = valid ? hljs.highlight(unescaped, { language: lang }).value : hljs.highlightAuto(unescaped).value
+      return `<pre><span class="kp-code-lang">${lang}</span><code class="hljs">${highlighted}</code></pre>`
+    })
+
+    // 链接新窗口打开
+    mdHtml = mdHtml.replace(/<a /g, '<a target="_blank" rel="noopener noreferrer" ')
+
+    // 表格包裹
+    mdHtml = mdHtml.replace(/(<table>[\s\S]*?<\/table>)/g, '<div class="kp-table-wrap">$1</div>')
+
+    return DOMPurify.sanitize(mdHtml, { ADD_ATTR: ['target'] })
+  } catch {
+    return text.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  }
 }
 
 const props = defineProps({
