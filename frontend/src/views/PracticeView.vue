@@ -24,75 +24,54 @@
         class="text-xs text-gray-400 disabled:opacity-30">下一题 →</button>
     </div>
 
-    <!-- 手机壳 + AI面板 整体居中行 -->
-    <div class="kp-main-row" :class="{ 'kp-expanded': aiOpen }">
-      <!-- 手机壳（题目区 + 底部操作 + 底部栏） -->
-      <div class="kp-phone-area">
-        <div class="flex-1 px-4 pb-4 overflow-y-auto">
-          <LoadingSpinner v-if="loading" />
-          <template v-else-if="question">
-            <span class="inline-block bg-purple/5 text-purple text-xs px-2 py-0.5 rounded mb-3">{{ question.type }}</span>
-            <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-2 leading-relaxed">{{ question.title }}</h2>
-            <div class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed whitespace-pre-wrap" v-html="renderedContent"></div>
-            <component
-              ref="answerRef"
-              :is="typeComp"
-              :key="question.id"
-              :question="question"
-              :options="parsedOptions"
-              :blanks="parsedBlanks"
-              :correct-answer="question.answer"
-              :submitted="submitted"
-              :previous-answer="previousAnswer"
-              @answer="onAnswer"
-            />
-          </template>
-        </div>
+    <!-- 手机壳内容 -->
+    <div class="flex-1 px-4 pb-4 overflow-y-auto">
+      <LoadingSpinner v-if="loading" />
+      <template v-else-if="question">
+        <span class="inline-block bg-purple/5 text-purple text-xs px-2 py-0.5 rounded mb-3">{{ question.type }}</span>
+        <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-2 leading-relaxed">{{ question.title }}</h2>
+        <div class="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed whitespace-pre-wrap" v-html="renderedContent"></div>
+        <component
+          ref="answerRef"
+          :is="typeComp"
+          :key="question.id"
+          :question="question"
+          :options="parsedOptions"
+          :blanks="parsedBlanks"
+          :correct-answer="question.answer"
+          :submitted="submitted"
+          :previous-answer="previousAnswer"
+          @answer="onAnswer"
+        />
+      </template>
+    </div>
 
-        <div class="px-4 pb-3">
-          <button v-if="!isReadonly && !submitted" @click="doSubmit"
-            class="w-full py-3 bg-purple text-white rounded-xl font-medium">提交</button>
-          <div v-if="submitted && !isFromWrong" class="flex gap-3">
-            <button v-if="isPrevWrong" @click="markCorrect"
-              class="flex-1 py-2.5 bg-green text-white rounded-lg text-sm font-medium">标为正确</button>
-            <button @click="prevQuestion" :disabled="!hasPrev"
-              class="flex-1 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm disabled:opacity-30 text-gray-500 dark:text-gray-400">上一题</button>
-            <button @click="nextQuestion" :disabled="!hasNext"
-              class="flex-1 py-2.5 bg-purple text-white rounded-lg text-sm disabled:opacity-30">下一题</button>
-          </div>
-          <button v-if="submitted && !hasNext && isFromWrong && !isReadonly" @click="backToWrong"
-            class="w-full py-2.5 bg-purple text-white rounded-lg text-sm font-medium">返回错题本</button>
-        </div>
-
-        <div class="flex items-center justify-between px-4 pb-2">
-          <BottomDisclaimer />
-          <div class="flex items-center gap-3 ml-4 flex-shrink-0">
-            <button @click="theme.toggle()" class="w-4 h-4 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
-              <svg v-if="theme.isDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-              <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-            </button>
-            <button @click="showSettings = true" class="w-4 h-4 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-            </button>
-          </div>
-        </div>
+    <div class="px-4 pb-3">
+      <button v-if="!isReadonly && !submitted" @click="doSubmit"
+        class="w-full py-3 bg-purple text-white rounded-xl font-medium">提交</button>
+      <div v-if="submitted && !isFromWrong" class="flex gap-3">
+        <button v-if="isPrevWrong" @click="markCorrect"
+          class="flex-1 py-2.5 bg-green text-white rounded-lg text-sm font-medium">标为正确</button>
+        <button @click="prevQuestion" :disabled="!hasPrev"
+          class="flex-1 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm disabled:opacity-30 text-gray-500 dark:text-gray-400">上一题</button>
+        <button @click="nextQuestion" :disabled="!hasNext"
+          class="flex-1 py-2.5 bg-purple text-white rounded-lg text-sm disabled:opacity-30">下一题</button>
       </div>
+      <button v-if="submitted && !hasNext && isFromWrong && !isReadonly" @click="backToWrong"
+        class="w-full py-2.5 bg-purple text-white rounded-lg text-sm font-medium">返回错题本</button>
+    </div>
 
-      <!-- AI 触发按钮（手机壳外右侧） -->
-      <button v-if="kpEnabled && !aiOpen" @click="openAiPanel" class="kp-trigger-btn">
-        <span class="kp-trigger-text">知识点解析</span>
-      </button>
-
-      <!-- AI 面板 -->
-      <AiKpPanel
-        v-if="aiOpen"
-        :content="aiContent"
-        :loading="aiLoading"
-        :error="aiError"
-        @close="closeAiPanel"
-        @reanalyze="reanalyze"
-        @chat="onChat"
-      />
+    <div class="flex items-center justify-between px-4 pb-2">
+      <BottomDisclaimer />
+      <div class="flex items-center gap-3 ml-4 flex-shrink-0">
+        <button @click="theme.toggle()" class="w-4 h-4 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
+          <svg v-if="theme.isDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+        <button @click="showSettings = true" class="w-4 h-4 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        </button>
+      </div>
     </div>
 
     <!-- 答题卡 -->
@@ -133,8 +112,7 @@ import FillBlank from '../components/practice/FillBlank.vue'
 import CodeWrite from '../components/practice/CodeWrite.vue'
 import CodeReview from '../components/practice/CodeReview.vue'
 import CodeEditorPanel from '../components/practice/CodeEditorPanel.vue'
-import AiKpPanel from '../components/practice/AiKpPanel.vue'
-import { checkKp, analyzeKp, chatKp } from '../api/knowledge_point'
+import { useKpStore } from '../stores/knowledge_point'
 
 const route = useRoute()
 const router = useRouter()
@@ -160,13 +138,7 @@ const progress = reactive({ done: 0, total: 618, accuracy: 0 })
 const editorCode = ref('')
 const answerRef = ref(null)
 
-// AI 知识点
-const kpEnabled = ref(false)
-const aiOpen = ref(false)
-const aiLoading = ref(false)
-const aiContent = ref('')
-const aiError = ref('')
-const aiQuestionId = ref(null)
+const kpStore = useKpStore()
 
 // 解析
 const parsedOptions = computed(() => {
@@ -335,12 +307,8 @@ async function loadCurrent() {
     showProgModeModal.value = true
   }
 
-  if (aiOpen.value) {
-    aiQuestionId.value = question.value.id
-    aiError.value = ''
-    aiContent.value = ''
-    await loadAnalysis()
-  }
+  // Sync current question ID to App.vue for KP trigger
+  window.__kpSetQuestion?.(question.value.id)
 }
 
 async function nextQuestion() {
@@ -362,69 +330,10 @@ async function jumpTo(id) {
 
 function backToWrong() { router.push('/wrong') }
 
-async function openAiPanel() {
-  aiOpen.value = true
-  aiQuestionId.value = question.value?.id
-  aiError.value = ''
-  aiContent.value = ''
-  await loadAnalysis()
-}
-
-async function loadAnalysis() {
-  if (!question.value?.id) return
-  aiLoading.value = true
-  aiError.value = ''
-  const qid = question.value.id
-  try {
-    const r = await analyzeKp(qid)
-    if (aiQuestionId.value !== qid) return
-    aiContent.value = r.analysis_md
-  } catch (e) {
-    if (aiQuestionId.value !== qid) return
-    aiError.value = e.response?.data?.detail || e.message || '解析失败'
-  } finally {
-    if (aiQuestionId.value === qid) aiLoading.value = false
-  }
-}
-
-async function reanalyze() {
-  if (!question.value?.id) return
-  if (!confirm('将重新调用 AI 分析当前题目的知识点，是否继续？')) return
-  aiLoading.value = true
-  aiError.value = ''
-  const qid = question.value.id
-  try {
-    const r = await analyzeKp(qid, true)
-    if (aiQuestionId.value !== qid) return
-    aiContent.value = r.analysis_md
-  } catch (e) {
-    if (aiQuestionId.value !== qid) return
-    aiError.value = e.response?.data?.detail || e.message || '重新解析失败'
-  } finally {
-    if (aiQuestionId.value === qid) aiLoading.value = false
-  }
-}
-
-function closeAiPanel() {
-  aiOpen.value = false
-  aiContent.value = ''
-  aiError.value = ''
-}
-
-async function onChat(messages, resolve, reject) {
-  try {
-    const r = await chatKp(question.value.id, messages)
-    resolve(r.reply)
-  } catch (e) {
-    reject(e)
-  }
-}
-
 onMounted(async () => {
   try {
     loading.value = true
     await auth.fetchMe()
-    checkKp().then(r => { kpEnabled.value = r.kp_enabled }).catch(() => {})
     settings.init()
     let nextId = null
     try {
@@ -473,64 +382,3 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-.kp-main-row {
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  flex: 1;
-  overflow: hidden;
-  padding: 0 12px;
-  gap: 8px;
-}
-.kp-phone-area {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 500px;
-  min-width: 280px;
-  min-height: 0;
-  flex-shrink: 1;
-}
-.kp-trigger-btn {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  padding: 12px 6px;
-  border-radius: 8px;
-  border: 1px solid #c4b5fd;
-  background: #ede9fe;
-  color: #7c3aed;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-  white-space: nowrap;
-  flex-shrink: 0;
-  align-self: center;
-  min-height: 140px;
-  max-height: 300px;
-  user-select: none;
-}
-.kp-trigger-btn:hover { background: #ddd6fe; }
-.kp-trigger-text { display: inline-block; letter-spacing: 2px; }
-</style>
-
-<style>
-.dark .kp-trigger-btn {
-  background: #1e1b4b;
-  border-color: #6d28d9;
-  color: #a78bfa;
-}
-.dark .kp-trigger-btn:hover {
-  background: #312e81;
-}
-.kp-trigger-btn {
-  min-height: 140px;
-}
-@media (min-height: 700px) {
-  .kp-trigger-btn { min-height: 200px; }
-}
-@media (min-height: 900px) {
-  .kp-trigger-btn { min-height: 280px; }
-}
-</style>
