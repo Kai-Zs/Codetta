@@ -1,34 +1,33 @@
 <template>
   <div class="flex flex-col flex-1 relative">
+    <!-- 顶栏 -->
+    <header class="flex justify-between items-center px-3 py-2">
+      <button @click="$router.back()" class="text-gray-400 dark:text-gray-500 p-1">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <div class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
+        <span>{{ question?.q_number }}</span>
+        <span v-if="!isFromWrong">已做 {{ progress.done }}/{{ progress.total }}</span>
+        <span v-if="!isFromWrong && store.mode !== 'filter'">正确率 {{ progress.accuracy }}%</span>
+      </div>
+      <button @click="showSheet = true" class="text-sm text-purple font-medium">答题卡</button>
+    </header>
+
+    <!-- 进度条 -->
+    <div class="h-1 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden flex-shrink-0"><div class="h-full bg-purple dark:bg-purple/80 transition-all duration-300 rounded-full" :style="{ width: progressPercent + '%' }" /></div>
+
+    <!-- 翻页 -->
+    <div class="flex justify-between px-4 py-1.5">
+      <button @click="prevQuestion" :disabled="!hasPrev"
+        class="text-xs text-gray-400 dark:text-gray-500 disabled:opacity-30">← 上一题</button>
+      <button @click="nextQuestion" :disabled="!hasNext"
+        class="text-xs text-gray-400 disabled:opacity-30">下一题 →</button>
+    </div>
+
     <!-- 手机壳 + AI面板 整体居中行 -->
     <div class="kp-main-row" :class="{ 'kp-expanded': aiOpen }">
-      <!-- 手机壳区域（含全部内容） -->
+      <!-- 手机壳（题目区 + 底部操作 + 底部栏） -->
       <div class="kp-phone-area">
-        <!-- 顶栏 -->
-        <header class="flex justify-between items-center px-3 py-2">
-          <button @click="$router.back()" class="text-gray-400 dark:text-gray-500 p-1">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-          </button>
-          <div class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
-            <span>{{ question?.q_number }}</span>
-            <span v-if="!isFromWrong">已做 {{ progress.done }}/{{ progress.total }}</span>
-            <span v-if="!isFromWrong && store.mode !== 'filter'">正确率 {{ progress.accuracy }}%</span>
-          </div>
-          <button @click="showSheet = true" class="text-sm text-purple font-medium">答题卡</button>
-        </header>
-
-        <!-- 进度条 -->
-        <div class="h-1 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden flex-shrink-0"><div class="h-full bg-purple dark:bg-purple/80 transition-all duration-300 rounded-full" :style="{ width: progressPercent + '%' }" /></div>
-
-        <!-- 翻页 -->
-        <div class="flex justify-between px-4 py-1.5">
-          <button @click="prevQuestion" :disabled="!hasPrev"
-            class="text-xs text-gray-400 dark:text-gray-500 disabled:opacity-30">← 上一题</button>
-          <button @click="nextQuestion" :disabled="!hasNext"
-            class="text-xs text-gray-400 disabled:opacity-30">下一题 →</button>
-        </div>
-
-        <!-- 题目区域 -->
         <div class="flex-1 px-4 pb-4 overflow-y-auto">
           <LoadingSpinner v-if="loading" />
           <template v-else-if="question">
@@ -50,7 +49,6 @@
           </template>
         </div>
 
-        <!-- 底部操作 -->
         <div class="px-4 pb-3">
           <button v-if="!isReadonly && !submitted" @click="doSubmit"
             class="w-full py-3 bg-purple text-white rounded-xl font-medium">提交</button>
@@ -66,7 +64,6 @@
             class="w-full py-2.5 bg-purple text-white rounded-lg text-sm font-medium">返回错题本</button>
         </div>
 
-        <!-- 底部 -->
         <div class="flex items-center justify-between px-4 pb-2">
           <BottomDisclaimer />
           <div class="flex items-center gap-3 ml-4 flex-shrink-0">
@@ -81,7 +78,7 @@
         </div>
       </div>
 
-      <!-- AI 触发按钮 -->
+      <!-- AI 触发按钮（手机壳外右侧） -->
       <button v-if="kpEnabled && !aiOpen" @click="openAiPanel" class="kp-trigger-btn">
         <span class="kp-trigger-text">知识点解析</span>
       </button>
