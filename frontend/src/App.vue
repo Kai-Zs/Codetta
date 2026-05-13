@@ -92,8 +92,10 @@ onMounted(() => {
   position: relative;
   z-index: 10;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
+  flex-direction: row;
+  gap: 0;
 }
 .kp-app-trigger {
   position: relative;
@@ -116,6 +118,24 @@ onMounted(() => {
 }
 .kp-app-trigger:hover { background: #ddd6fe; }
 .kp-app-trigger-text { display: inline-block; letter-spacing: 2px; }
+
+/* 手机端：按钮和面板放到手机壳下面 */
+@media (max-width: 768px) {
+  .kp-app-row {
+    flex-direction: column;
+    align-items: center;
+    padding: 0 12px;
+  }
+  .kp-app-trigger {
+    writing-mode: horizontal-tb;
+    min-height: auto;
+    max-height: none;
+    align-self: center;
+    padding: 10px 24px;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+}
 </style>
 
 <style>

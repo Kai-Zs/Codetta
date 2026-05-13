@@ -286,6 +286,15 @@ onBeforeUnmount(() => { twStop() })
   overflow: hidden;
   transition: background 0.3s ease, border-color 0.3s ease;
 }
+@media (max-width: 768px) {
+  .kp-panel {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: 60vh;
+    max-height: 60vh;
+  }
+}
 .dark .kp-panel { background: #1a1a2e; border-color: #2d2d4a; }
 
 .kp-topbar {
