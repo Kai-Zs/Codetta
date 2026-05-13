@@ -84,7 +84,7 @@ async function onChat(messages, resolve, reject) {
 
 onMounted(() => {
   theme.init()
-  kpStore.check()
+  if (localStorage.getItem('token')) kpStore.check()
 })
 
 // 离开做题页时自动关闭 AI 面板
