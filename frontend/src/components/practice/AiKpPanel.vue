@@ -400,6 +400,7 @@ onBeforeUnmount(() => { twStop() })
 
 .kp-chat-input {
   flex: 1; resize: none; padding: 8px 12px; border-radius: 8px;
+  scrollbar-width: thin; scrollbar-color: #d4c0f0 transparent;
   border: 1px solid #d1d5db;
   font-size: 13px; line-height: 1.5;
   background: #f9fafb; color: #374151;
@@ -423,6 +424,11 @@ onBeforeUnmount(() => { twStop() })
 .kp-scroll::-webkit-scrollbar-track { background: transparent; }
 .kp-scroll::-webkit-scrollbar-thumb { background: #d4c0f0; border-radius: 2px; }
 .dark .kp-scroll::-webkit-scrollbar-thumb { background: #3a3050; }
+
+.kp-chat-input::-webkit-scrollbar { width: 4px; }
+.kp-chat-input::-webkit-scrollbar-track { background: transparent; }
+.kp-chat-input::-webkit-scrollbar-thumb { background: #d4c0f0; border-radius: 2px; }
+.dark .kp-chat-input::-webkit-scrollbar-thumb { background: #3a3050; }
 
 /* ===== markdown 渲染全局样式 ===== */
 
