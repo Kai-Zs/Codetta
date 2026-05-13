@@ -15,15 +15,17 @@
         class="kp-app-trigger"
         @click="kpStore.open(currentQuestionId, null)"
       >知识点解析 (beta)</button>
-      <AiKpPanel
-        v-if="kpStore.aiOpen"
-        :content="kpStore.aiContent"
-        :loading="kpStore.aiLoading"
+      <Transition name="kp-slide">
+        <AiKpPanel
+          v-if="kpStore.aiOpen"
+          :content="kpStore.aiContent"
+          :loading="kpStore.aiLoading"
         :error="kpStore.aiError"
         @close="kpStore.close()"
         @reanalyze="onReanalyze"
         @chat="onChat"
-      />
+        />
+      </Transition>
     </div>
     <!-- 备案信息 -->
     <div class="fixed bottom-0 left-0 right-0 z-0 pb-1.5 text-center pointer-events-none">
@@ -143,6 +145,18 @@ watch(isPractice, (val) => {
 </style>
 
 <style>
+/* AI 面板滑入/滑出动画 */
+.kp-slide-enter-active { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.kp-slide-leave-active { transition: all 0.25s cubic-bezier(0.4, 0, 0.6, 1); }
+.kp-slide-enter-from {
+  opacity: 0;
+  transform: translateX(40px) scale(0.96);
+}
+.kp-slide-leave-to {
+  opacity: 0;
+  transform: translateX(20px) scale(0.98);
+}
+
 .dark .kp-app-trigger {
   background: #2d1b69;
   border-color: #a78bfa;

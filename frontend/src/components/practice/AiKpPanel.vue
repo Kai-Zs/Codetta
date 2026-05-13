@@ -361,12 +361,23 @@ onBeforeUnmount(() => { twStop() })
   transition: background 0.3s ease;
 }
 .kp-btn-retry:hover { background: #7c3aed; }
+
+/* 骨架流光动画 */
 .kp-skeleton { width: 100%; }
 .kp-skel-line {
-  height: 14px; background: #e5e7eb; border-radius: 4px; margin-bottom: 10px;
-  transition: background 0.3s ease;
+  height: 14px; border-radius: 4px; margin-bottom: 10px;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: kp-shimmer 1.5s ease-in-out infinite;
 }
-.dark .kp-skel-line { background: #374151; }
+.dark .kp-skel-line {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  background-size: 200% 100%;
+}
+@keyframes kp-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 .w-3\/4 { width: 75%; } .w-1\/2 { width: 50%; } .w-full { width: 100%; } .w-2\/3 { width: 66.6%; }
 
 /* 对话消息 - AI */
