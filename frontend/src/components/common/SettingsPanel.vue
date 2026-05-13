@@ -1,9 +1,15 @@
 <template>
   <Teleport to="body">
-    <Transition enter-active-class="transition duration-200 ease-out" leave-active-class="transition duration-150 ease-in"
-      enter-from-class="opacity-0 scale-90" leave-to-class="opacity-0 scale-95">
-      <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" @click.self="$emit('close')">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl px-6 py-6 w-72 shadow-xl" style="transition: opacity 0.2s ease-out, transform 0.2s ease-out">
+    <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center" @click.self="$emit('close')">
+      <!-- 背景遮罩独立动画 -->
+      <Transition enter-active-class="transition duration-300 ease-out" leave-active-class="transition duration-200 ease-in"
+        enter-from-class="opacity-0" leave-to-class="opacity-0">
+        <div v-if="open" class="absolute inset-0 bg-black/40"></div>
+      </Transition>
+      <!-- 卡片独立动画 -->
+      <Transition enter-active-class="transition duration-300 ease-out" leave-active-class="transition duration-150 ease-in"
+        enter-from-class="opacity-0 translate-y-4 scale-95" leave-to-class="opacity-0 translate-y-2 scale-97">
+        <div v-if="open" class="relative bg-white dark:bg-gray-800 rounded-2xl px-6 py-6 w-72 shadow-xl">
           <h3 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-6">设置</h3>
           <div class="mb-6">
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">编程题模式</p>
@@ -35,8 +41,8 @@
             </button>
           </div>
         </div>
-      </div>
-    </Transition>
+      </Transition>
+    </div>
   </Teleport>
 </template>
 
