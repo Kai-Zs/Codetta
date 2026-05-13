@@ -57,6 +57,9 @@
       </template>
     </div>
 
+    <!-- AI 准确性提示 -->
+    <div v-if="content" class="kp-disclaimer">AI 生成内容仅供参考，请以教材和教师讲解为准</div>
+
     <!-- 底部输入区（有内容时始终显示） -->
     <div v-if="content" class="kp-input-row">
       <textarea
@@ -357,6 +360,14 @@ onBeforeUnmount(() => { twStop() })
 /* 加载动画 */
 .kp-typing { animation: kp-blink 1s infinite; font-size: 18px; color: #9ca3af; }
 @keyframes kp-blink { 50% { opacity: 0; } }
+
+/* AI 准确性提示 */
+.kp-disclaimer {
+  text-align: center; font-size: 11px; color: #9ca3af;
+  padding: 6px 14px 0; flex-shrink: 0; user-select: none;
+  transition: color 0.3s ease;
+}
+.dark .kp-disclaimer { color: #6b7280; }
 
 /* 底部输入 */
 .kp-input-row {
