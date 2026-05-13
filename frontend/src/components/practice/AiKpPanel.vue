@@ -452,19 +452,25 @@ onBeforeUnmount(() => { twStop() })
 
 /* 代码块 */
 .kp-msg-body pre {
-  background: #1f2937; color: #e5e7eb; padding: 14px 16px; border-radius: 8px;
-  overflow-x: auto; font-size: 12px; line-height: 1.6; margin: 10px 0;
+  background: #1e1e2e; color: #c9d1d9; padding: 16px; border-radius: 10px;
+  overflow-x: auto; font-size: 12.5px; line-height: 1.65; margin: 12px 0;
   position: relative;
-  transition: background 0.3s ease;
+  border: 1px solid #e5e7eb;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
-.dark .kp-msg-body pre { background: #0d1117; }
+.dark .kp-msg-body pre {
+  background: #16162a; border-color: #2d2d4a;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
 
 /* 代码语言标签 */
 .kp-code-lang {
-  position: absolute; top: 0; right: 0; padding: 2px 8px;
-  font-size: 10px; color: #9ca3af; background: rgba(255,255,255,0.08);
-  border-radius: 0 8px 0 6px;
-  text-transform: uppercase; letter-spacing: 0.5px;
+  position: absolute; top: 8px; right: 8px; padding: 2px 8px;
+  font-size: 10px; color: #8b949e; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 4px;
+  text-transform: lowercase; letter-spacing: 0.3px;
+  pointer-events: none;
 }
 
 /* 表格容器（溢出滚动） */
