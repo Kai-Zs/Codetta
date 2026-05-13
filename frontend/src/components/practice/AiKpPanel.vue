@@ -107,7 +107,7 @@ function renderMd(text) {
     })
     let mdHtml = marked.parse(html)
     mdHtml = mdHtml.replace(/<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g, (_, lang, code) => {
-      const unescaped = code.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"')
+      const unescaped = decodeEntities(code)
       const valid = hljs.getLanguage(lang)
       const highlighted = valid ? hljs.highlight(unescaped, { language: lang }).value : hljs.highlightAuto(unescaped).value
       return `<pre><span class="kp-code-lang">${lang}</span><code class="hljs">${highlighted}</code></pre>`
