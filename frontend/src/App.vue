@@ -95,7 +95,7 @@ watch(isPractice, (val) => {
   position: relative;
   z-index: 10;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   flex-direction: row;
   gap: 0;
@@ -146,15 +146,22 @@ watch(isPractice, (val) => {
 
 <style>
 /* AI 面板滑入/滑出动画 */
-.kp-slide-enter-active { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
-.kp-slide-leave-active { transition: all 0.25s cubic-bezier(0.4, 0, 0.6, 1); }
+.kp-slide-enter-active {
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.kp-slide-leave-active {
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.6, 1),
+              transform 0.25s cubic-bezier(0.4, 0, 0.6, 1);
+  position: absolute;
+}
 .kp-slide-enter-from {
   opacity: 0;
-  transform: translateX(40px) scale(0.96);
+  transform: translateX(60px);
 }
 .kp-slide-leave-to {
   opacity: 0;
-  transform: translateX(20px) scale(0.98);
+  transform: translateX(30px);
 }
 
 .dark .kp-app-trigger {
