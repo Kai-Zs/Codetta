@@ -22,12 +22,12 @@
             <td class="py-2 pr-2 text-xs">
               <button
                 @click="toggleKp(u)"
-                :class="kpMap[u.student_id] ? 'bg-green' : 'bg-gray-200 dark:bg-gray-700'"
-                class="w-10 h-5 rounded-full relative transition-colors"
+                :class="kpMap[u.student_id] ? 'bg-purple' : 'bg-gray-200 dark:bg-gray-600'"
+                class="w-12 h-7 rounded-full transition-colors relative"
               >
                 <span
-                  class="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"
-                  :class="kpMap[u.student_id] ? 'translate-x-5' : 'translate-x-0.5'"
+                  :class="kpMap[u.student_id] ? 'translate-x-5' : 'translate-x-0'"
+                  class="absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform duration-200"
                 ></span>
               </button>
             </td>
