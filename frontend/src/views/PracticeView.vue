@@ -368,6 +368,16 @@ onMounted(async () => {
 
     const { data } = await api.get('/questions', { params })
     questions.value = data.items
+    // 筛选/错题模式：用过滤后的总数和已做题计算进度
+    if (store.mode === 'filter' || isFromWrong.value) {
+      progress.total = data.total
+      const filteredIds = new Set(data.items.map(q => q.id))
+      const doneInFilter = Object.entries(answerStatuses.value).filter(([qid]) => filteredIds.has(parseInt(qid)))
+      progress.done = doneInFilter.length
+      progress.accuracy = progress.done
+        ? Math.round(doneInFilter.filter(([, s]) => s === 'correct').length / progress.done * 1000) / 10
+        : 0
+    }
     // sequential 模式：从第一个未做题开始；filter 模式从第一题开始
     if (store.mode === 'sequential' && nextId) {
       const idx = questions.value.findIndex(q => q.id === nextId)
