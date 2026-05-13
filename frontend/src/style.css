@@ -131,10 +131,12 @@ button, input, select, textarea {
 /* === 手机壳 + 编辑器整体居中 === */
 .phone-wrapper { }
 
-/* === 代码编辑器（在 flex 布局中） === */
+/* === 代码编辑器（在 flex 布局中，尺寸与手机壳一致） === */
 .editor-panel {
   width: 340px;
   max-width: 88vw;
+  min-height: 520px;
+  max-height: 94vh;
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 4px 24px rgba(100, 40, 180, 0.08);
@@ -142,8 +144,6 @@ button, input, select, textarea {
   display: flex;
   flex-direction: column;
   z-index: 15;
-  min-height: 400px;
-  max-height: calc(100vh - 7rem);
 }
 
 .editor-header {
