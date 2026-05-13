@@ -61,12 +61,8 @@ const currentQuestionId = ref(null)
 // Allow PracticeView to set question context via global event
 window.__kpSetQuestion = (qid) => {
   currentQuestionId.value = qid
-  if (kpStore.aiOpen && qid) {
-    kpStore.questionId = qid
-    kpStore.aiContent = ''
-    kpStore.aiError = ''
-    kpStore._loadAnalysis()
-  }
+  // 切题时关闭 AI 面板，需重新触发
+  if (kpStore.aiOpen) kpStore.close()
 }
 
 function onReanalyze() {
