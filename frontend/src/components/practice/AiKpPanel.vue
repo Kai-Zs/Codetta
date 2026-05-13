@@ -276,6 +276,7 @@ onBeforeUnmount(() => { twStop() })
   min-width: 340px;
   max-width: 880px;
   min-height: 400px;
+  max-height: calc(100vh - 7rem);
   max-height: calc(100dvh - 7rem);
   display: flex;
   flex-direction: column;
@@ -291,8 +292,9 @@ onBeforeUnmount(() => { twStop() })
     width: 340px;
     max-width: 88vw;
     min-width: 0;
-    min-height: 55vh;
+    min-height: 400px;
     max-height: 75vh;
+    max-height: 75dvh;
   }
 }
 .dark .kp-panel { background: #1a1a2e; border-color: #2d2d4a; }

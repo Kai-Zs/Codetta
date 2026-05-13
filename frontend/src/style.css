@@ -94,6 +94,7 @@ button, input, select, textarea {
   max-width: 88vw;
   min-height: 520px;
   max-height: 94vh;
+  max-height: 94dvh;
   background: #fff;
   border-radius: 20px;
   box-shadow:
