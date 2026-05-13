@@ -145,23 +145,22 @@ watch(isPractice, (val) => {
 </style>
 
 <style>
-/* AI 面板滑入/滑出动画 */
+/* AI 面板滑入动画 */
 .kp-slide-enter-active {
-  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.3s ease-out,
+              transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .kp-slide-leave-active {
-  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.6, 1),
-              transform 0.25s cubic-bezier(0.4, 0, 0.6, 1);
-  position: absolute;
+  transition: opacity 0.2s ease-in,
+              transform 0.2s ease-in;
 }
 .kp-slide-enter-from {
   opacity: 0;
-  transform: translateX(60px);
+  transform: translateX(80px);
 }
 .kp-slide-leave-to {
   opacity: 0;
-  transform: translateX(30px);
+  transform: translateX(40px) scale(0.95);
 }
 
 .dark .kp-app-trigger {
