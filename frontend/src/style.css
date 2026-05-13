@@ -135,8 +135,7 @@ button, input, select, textarea {
 .editor-panel {
   width: 340px;
   max-width: 88vw;
-  min-height: 520px;
-  max-height: 94vh;
+  height: 100%;
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 4px 24px rgba(100, 40, 180, 0.08);
@@ -159,13 +158,16 @@ button, input, select, textarea {
 
 .editor-body {
   flex: 1;
-  min-height: 200px;
+  min-height: 0;
   padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .editor-area {
   width: 100%;
-  height: 280px;
+  flex: 1;
+  min-height: 200px;
   border-radius: 12px;
   overflow: hidden;
 }
@@ -193,7 +195,8 @@ button, input, select, textarea {
     box-shadow: 0 4px 24px rgba(100, 40, 180, 0.08);
   }
   .editor-panel--mobile .editor-area {
-    height: 200px;
+    flex: 1;
+    min-height: 200px;
   }
 }
 

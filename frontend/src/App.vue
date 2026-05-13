@@ -98,7 +98,7 @@ watch(isPractice, (val) => {
   position: relative;
   z-index: 10;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: center;
   flex-direction: row;
   gap: 0;
