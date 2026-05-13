@@ -31,7 +31,7 @@
 
     <!-- 主区域 -->
     <main class="flex-1 flex flex-col items-center justify-center px-4">
-      <h1 class="text-2xl font-[Georgia] text-purple tracking-widest mb-1">练笔小筑<sup class="text-xs font-sans ml-1 align-top rainbow-text">v2.0</sup></h1>
+      <h1 class="text-2xl font-[Georgia] text-purple tracking-widest mb-1">练笔小筑<sup class="text-xs font-sans font-bold ml-1 align-top rainbow-text">v2.0</sup></h1>
       <p class="text-xs text-gray-400 dark:text-gray-500 tracking-widest mb-1">一题一阶 · 拾级而上</p>
       <p class="text-xs text-gray-400 dark:text-gray-500 tracking-widest mb-12">练习Python · 备战考试</p>
       <button @click="goSequential"
