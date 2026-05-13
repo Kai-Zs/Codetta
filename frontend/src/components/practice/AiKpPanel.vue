@@ -88,8 +88,15 @@ import DOMPurify from 'dompurify'
 
 marked.setOptions({ breaks: true, gfm: true })
 
+function decodeEntities(text) {
+  const txt = document.createElement('textarea')
+  txt.innerHTML = text
+  return txt.value
+}
+
 function renderMd(text) {
   try {
+    text = decodeEntities(text)
     let html = text.replace(/\$\$([\s\S]*?)\$\$/g, (_, f) => {
       try { return katex.renderToString(f.trim(), { displayMode: true, throwOnError: false }) }
       catch { return `<pre>${f}</pre>` }

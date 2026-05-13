@@ -1,5 +1,6 @@
 """AI 知识点解析服务"""
 import os
+import html
 import threading
 import httpx
 from contextlib import contextmanager
@@ -88,6 +89,10 @@ CHAT_PROMPT = """你是一个 Python 学习助教。以下是一道题目的信�
 请结合以上上下文回答用户的问题。"""
 
 
+def _unescape(val) -> str:
+    return html.unescape(str(val)) if val else ""
+
+
 def _build_analyze_messages(question: dict) -> list[dict]:
     q_type = question["type"]
     if q_type == "编程题":
@@ -102,13 +107,13 @@ def _build_analyze_messages(question: dict) -> list[dict]:
     note_block = f"【解析/备注】\n{question['note']}" if question.get("note") else ""
 
     prompt = KP_PROMPT.format(
-        q_number=question["q_number"],
-        chapter=question["chapter"],
-        type=question["type"],
-        content=question.get("content") or question.get("title", ""),
-        answer_block=answer_block,
-        options_block=options_block,
-        note_block=note_block,
+        q_number=_unescape(question["q_number"]),
+        chapter=_unescape(question["chapter"]),
+        type=_unescape(question["type"]),
+        content=_unescape(question.get("content") or question.get("title", "")),
+        answer_block=_unescape(answer_block),
+        options_block=_unescape(options_block),
+        note_block=_unescape(note_block),
     )
     return [{"role": "user", "content": prompt}]
 
@@ -209,11 +214,11 @@ def chat_followup(question_id: int, messages: list[dict]) -> str:
     system_msg = {
         "role": "system",
         "content": CHAT_PROMPT.format(
-            q_number=q["q_number"],
-            chapter=q["chapter"],
-            type=q["type"],
-            content=q.get("content") or q.get("title", ""),
-            answer=answer_text,
+            q_number=_unescape(q["q_number"]),
+            chapter=_unescape(q["chapter"]),
+            type=_unescape(q["type"]),
+            content=_unescape(q.get("content") or q.get("title", "")),
+            answer=_unescape(answer_text),
             analysis_md=analysis_md,
         ),
     }
