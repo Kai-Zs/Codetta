@@ -19,7 +19,7 @@
           <div class="kp-skel-line w-full"></div>
           <div class="kp-skel-line w-2/3"></div>
         </div>
-        <p class="kp-loading-text">AI 正在分析知识点…</p>
+        <p class="kp-loading-text">AI 正在分析知识点…（思考中）请耐心等待</p>
       </div>
 
       <!-- 错误态 -->
@@ -275,6 +275,8 @@ onBeforeUnmount(() => { twStop() })
   flex: 1;
   min-width: 340px;
   max-width: 880px;
+  height: calc(100vh - 7rem);
+  max-height: calc(100vh - 7rem);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -289,7 +291,8 @@ onBeforeUnmount(() => { twStop() })
     width: 340px;
     max-width: 88vw;
     min-width: 0;
-    min-height: 60vh;
+    height: 60vh;
+    max-height: 60vh;
   }
 }
 .dark .kp-panel { background: #1a1a2e; border-color: #2d2d4a; }
