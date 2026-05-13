@@ -206,6 +206,20 @@ button, input, select, textarea {
   .editor-panel-enter { animation: none; }
 }
 
+/* === 彩虹文字动画 === */
+.rainbow-text {
+  background: linear-gradient(90deg, #f43f5e, #f97316, #eab308, #22c55e, #3b82f6, #8b5cf6, #ec4899);
+  background-size: 400% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow-flow 3s linear infinite;
+}
+@keyframes rainbow-flow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 400% 50%; }
+}
+
 /* === 通用工具类 === */
 .bg-pattern-anim {
   animation: slideUpRight 7s linear infinite;
