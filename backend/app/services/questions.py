@@ -13,8 +13,11 @@ def list_questions(type: str = "", chapter: str = "", ids: str = "", page: int =
                 where.append(f"id IN ({placeholders})")
                 params.extend(id_list)
         if type:
-            where.append("type=?")
-            params.append(type)
+            type_list = [t.strip() for t in type.split(",") if t.strip()]
+            if type_list:
+                placeholders = ",".join("?" * len(type_list))
+                where.append(f"type IN ({placeholders})")
+                params.extend(type_list)
         if chapter:
             where.append("chapter=?")
             params.append(chapter)
