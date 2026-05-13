@@ -422,13 +422,15 @@ onBeforeUnmount(() => { twStop() })
 /* 滚动条 — 与手机壳同款 */
 .kp-scroll::-webkit-scrollbar { width: 4px; }
 .kp-scroll::-webkit-scrollbar-track { background: transparent; }
-.kp-scroll::-webkit-scrollbar-thumb { background: #d4c0f0; border-radius: 2px; }
-.dark .kp-scroll::-webkit-scrollbar-thumb { background: #3a3050; }
+.kp-scroll::-webkit-scrollbar-thumb { background: transparent; border-radius: 2px; transition: background 0.3s ease; }
+.kp-scroll:hover::-webkit-scrollbar-thumb { background: #d4c0f0; }
+.dark .kp-scroll:hover::-webkit-scrollbar-thumb { background: #3a3050; }
 
 .kp-chat-input::-webkit-scrollbar { width: 4px; }
 .kp-chat-input::-webkit-scrollbar-track { background: transparent; }
-.kp-chat-input::-webkit-scrollbar-thumb { background: #d4c0f0; border-radius: 2px; }
-.dark .kp-chat-input::-webkit-scrollbar-thumb { background: #3a3050; }
+.kp-chat-input::-webkit-scrollbar-thumb { background: transparent; border-radius: 2px; transition: background 0.3s ease; }
+.kp-chat-input:hover::-webkit-scrollbar-thumb { background: #d4c0f0; }
+.dark .kp-chat-input:hover::-webkit-scrollbar-thumb { background: #3a3050; }
 
 /* ===== markdown 渲染全局样式 ===== */
 
