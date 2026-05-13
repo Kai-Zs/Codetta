@@ -213,13 +213,6 @@ def change_admin_password(new_password: str) -> None:
         mod.ADMIN_PASSWORD = new_password
 
 
-def reload_seed() -> None:
-    import subprocess
-    import sys
-    seed_path = os.path.join(BASE_DIR, "seed", "seed.py")
-    subprocess.run([sys.executable, seed_path], cwd=BASE_DIR, check=True)
-
-
 def list_kp_access(search: str = "") -> list[dict]:
     from .knowledge_point import get_kp_db
 

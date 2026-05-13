@@ -97,15 +97,6 @@ def change_password(body: PasswordChange):
     return {"ok": True}
 
 
-@router.post("/reload-seed", dependencies=[Depends(verify_admin)])
-def reload_seed():
-    try:
-        svc.reload_seed()
-        return {"ok": True}
-    except Exception as e:
-        raise HTTPException(500, f"重载失败: {str(e)[:100]}")
-
-
 @router.get("/kp-access", dependencies=[Depends(verify_admin)])
 def list_kp_access(search: str = Query("")):
     return {"items": svc.list_kp_access(search)}

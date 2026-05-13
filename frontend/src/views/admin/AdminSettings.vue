@@ -25,26 +25,16 @@
       <p v-if="pwdMsg" class="text-xs mt-2" :class="pwdOk ? 'text-green' : 'text-red-400'">{{ pwdMsg }}</p>
     </div>
 
-    <!-- 题库重载 -->
-    <div>
-      <h4 class="text-sm font-medium text-gray-600 dark:text-gray-300 mb-3">题库重载（危险操作）</h4>
-      <button @click="confirmReload = true" class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm">重载题库</button>
-      <ConfirmDialog :open="confirmReload"
-        msg="将从 Excel/HTML 重新导入题目，此操作不可恢复！确定继续？"
-        @confirm="doReload" @close="confirmReload = false" />
-    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import api from '../../api'
-import ConfirmDialog from '../../components/common/ConfirmDialog.vue'
 
 const maintenance = ref(false)
 const oldPwd = ref(''), newPwd = ref(''), newPwd2 = ref('')
 const pwdMsg = ref(''), pwdOk = ref(false)
-const confirmReload = ref(false)
 
 onMounted(async () => {
   try {
@@ -75,13 +65,4 @@ async function changePwd() {
   }
 }
 
-async function doReload() {
-  confirmReload.value = false
-  try {
-    await api.post('/admin/reload-seed')
-    pwdMsg.value = '题库重载完成'; pwdOk.value = true
-  } catch {
-    pwdMsg.value = '重载失败'; pwdOk.value = false
-  }
-}
 </script>
