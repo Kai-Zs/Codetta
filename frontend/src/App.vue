@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import beianIcon from './assets/beian.png'
 import BackgroundLayer from './components/layout/BackgroundLayer.vue'
@@ -84,6 +84,11 @@ async function onChat(messages, resolve, reject) {
 onMounted(() => {
   theme.init()
   kpStore.check()
+})
+
+// 离开做题页时自动关闭 AI 面板
+watch(isPractice, (val) => {
+  if (!val) kpStore.close()
 })
 </script>
 
