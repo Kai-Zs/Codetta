@@ -14,7 +14,7 @@
         v-if="kpStore.kpEnabled && !kpStore.aiOpen && isPractice"
         class="kp-app-trigger"
         @click="kpStore.open(currentQuestionId, null)"
-      >知识点解析</button>
+      >知识点解析 (beta)</button>
       <AiKpPanel
         v-if="kpStore.aiOpen"
         :content="kpStore.aiContent"
