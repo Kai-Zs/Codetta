@@ -119,7 +119,6 @@ watch(isPractice, (val) => {
   white-space: nowrap;
   flex-shrink: 0;
   min-height: 140px;
-  max-height: 65vh;
   align-self: stretch;
 }
 .kp-app-trigger:hover { background: #ddd6fe; }
