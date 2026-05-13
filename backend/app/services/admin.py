@@ -164,6 +164,38 @@ def get_stats() -> dict:
             "GROUP BY u.id ORDER BY done DESC LIMIT 10"
         ).fetchall()
 
+        # 题型正确率
+        type_acc = db.execute(
+            "SELECT q.type, COUNT(DISTINCT q.id) AS q_cnt, "
+            "COUNT(DISTINCT p.question_id) AS done_cnt, "
+            "SUM(CASE WHEN p.answer_status='correct' THEN 1 ELSE 0 END) AS correct_cnt "
+            "FROM questions q "
+            "LEFT JOIN (SELECT question_id, answer_status FROM progress WHERE rowid IN (SELECT MAX(rowid) FROM progress GROUP BY question_id)) p ON q.id=p.question_id "
+            "WHERE q.is_active=1 GROUP BY q.type"
+        ).fetchall()
+        type_accuracy = []
+        for t in type_acc:
+            d = dict(t)
+            d["accuracy"] = round(d["correct_cnt"] / d["done_cnt"] * 100, 1) if d["done_cnt"] else 0
+            type_accuracy.append(d)
+
+        # 易错题 TOP10
+        top_missed = db.execute(
+            "SELECT q.q_number, q.type, q.title, q.chapter, "
+            "COUNT(p.id) AS wrong_cnt "
+            "FROM questions q JOIN progress p ON q.id=p.question_id "
+            "WHERE p.answer_status='incorrect' AND q.is_active=1 "
+            "GROUP BY q.id ORDER BY wrong_cnt DESC LIMIT 10"
+        ).fetchall()
+
+        # 近 14 天每日提交量
+        recent_daily = db.execute(
+            "SELECT date(answered_at) AS day, COUNT(*) AS cnt "
+            "FROM progress "
+            "WHERE answered_at >= date('now','localtime','-14 days') "
+            "GROUP BY day ORDER BY day"
+        ).fetchall()
+
         return {
             "total_users": total_users,
             "total_questions": total_questions,
@@ -171,7 +203,10 @@ def get_stats() -> dict:
             "overall_accuracy": overall_accuracy,
             "chapter_stats": [dict(c) for c in chapter_stats],
             "type_distribution": [dict(t) for t in type_dist],
+            "type_accuracy": [dict(t) for t in type_accuracy],
             "top_users": [dict(u) for u in top_users],
+            "top_missed": [dict(m) for m in top_missed],
+            "recent_daily": [dict(d) for d in recent_daily],
         }
 
 
