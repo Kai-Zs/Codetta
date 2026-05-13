@@ -1,15 +1,11 @@
 <template>
   <Teleport to="body">
-    <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center">
-      <!-- 背景遮罩独立动画 -->
-      <Transition enter-active-class="transition duration-300 ease-out" leave-active-class="transition duration-200 ease-in"
-        enter-from-class="opacity-0" leave-to-class="opacity-0">
-        <div v-if="open" class="absolute inset-0 bg-black/40" @click="$emit('close')"></div>
-      </Transition>
-      <!-- 卡片独立动画 -->
-      <Transition enter-active-class="transition duration-300 ease-out" leave-active-class="transition duration-150 ease-in"
-        enter-from-class="opacity-0 translate-y-4 scale-95" leave-to-class="opacity-0 translate-y-2 scale-97">
-        <div v-if="open" class="relative bg-white dark:bg-gray-800 rounded-2xl px-6 py-6 w-72 shadow-xl" @click.stop>
+    <Transition enter-active-class="transition duration-350 ease-out" leave-active-class="transition duration-200 ease-in"
+      enter-from-class="opacity-0 translate-y-full" leave-to-class="opacity-0 translate-y-8">
+      <div v-if="open" class="fixed inset-0 z-50 flex items-end justify-center pb-8" @click.self="$emit('close')">
+        <div class="relative bg-white dark:bg-gray-800 rounded-2xl px-6 pt-6 pb-6 w-72 shadow-2xl" @click.stop>
+          <!-- 关闭按钮 -->
+          <button @click="$emit('close')" class="absolute top-3 right-3 w-6 h-6 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition">&#10005;</button>
           <h3 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-6">设置</h3>
           <div class="mb-6">
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">编程题模式</p>
@@ -41,8 +37,8 @@
             </button>
           </div>
         </div>
-      </Transition>
-    </div>
+      </div>
+    </Transition>
   </Teleport>
 </template>
 
