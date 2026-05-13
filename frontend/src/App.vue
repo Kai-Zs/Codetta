@@ -5,11 +5,14 @@
     <router-view v-if="isAdmin" />
     <!-- 普通页面：手机壳 + AI面板 -->
     <div v-if="!isAdmin" class="kp-app-row" :style="{ gap: kpStore.aiOpen ? '36px' : '4px' }">
-      <div :class="['phone-wrapper', { 'phone-wrapper--editor': hasEditor }]">
+      <div class="phone-wrapper">
         <PhoneShell>
           <router-view />
         </PhoneShell>
       </div>
+      <!-- 代码编辑器插槽 -->
+      <div id="kp-editor-slot" class="kp-editor-slot" :class="{ 'kp-editor-slot--visible': hasEditor }"></div>
+
       <button
         v-if="kpStore.kpEnabled && !kpStore.aiOpen && isPractice"
         class="kp-app-trigger"
@@ -122,6 +125,10 @@ watch(isPractice, (val) => {
 .kp-app-trigger:hover { background: #ddd6fe; }
 .kp-app-trigger-text { display: inline-block; letter-spacing: 2px; }
 
+/* 编辑器插槽 */
+.kp-editor-slot { display: none; }
+.kp-editor-slot--visible { display: block; width: 340px; max-width: 88vw; flex-shrink: 0; }
+
 /* 手机端：按钮和面板放到手机壳下面 */
 @media (max-width: 768px) {
   .kp-app-row {
@@ -129,6 +136,7 @@ watch(isPractice, (val) => {
     align-items: center;
     padding: 0 12px;
   }
+  .kp-editor-slot--visible { width: 100%; max-width: 100%; }
   .kp-app-trigger {
     writing-mode: horizontal-tb;
     min-height: auto;

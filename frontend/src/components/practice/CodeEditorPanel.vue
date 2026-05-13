@@ -1,5 +1,5 @@
 <template>
-  <Teleport to="body" :disabled="isMobile">
+  <Teleport to="#kp-editor-slot" :disabled="isMobile">
     <Transition enter-active-class="transition duration-300 ease-out" leave-active-class="transition duration-200 ease-in"
       enter-from-class="opacity-0 translate-x-5" leave-to-class="opacity-0 translate-x-5">
       <div v-if="visible" :class="['editor-panel', { 'editor-panel--mobile': isMobile }]">
