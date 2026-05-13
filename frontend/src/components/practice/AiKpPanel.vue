@@ -275,8 +275,8 @@ onBeforeUnmount(() => { twStop() })
   flex: 1;
   min-width: 340px;
   max-width: 880px;
-  height: calc(100vh - 7rem);
-  max-height: calc(100vh - 7rem);
+  height: calc(100dvh - 7rem);
+  max-height: calc(100dvh - 7rem);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -291,8 +291,8 @@ onBeforeUnmount(() => { twStop() })
     width: 340px;
     max-width: 88vw;
     min-width: 0;
-    height: 60vh;
-    max-height: 60vh;
+    height: calc(100dvh - 20rem);
+    max-height: calc(100dvh - 20rem);
   }
 }
 .dark .kp-panel { background: #1a1a2e; border-color: #2d2d4a; }
