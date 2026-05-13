@@ -64,8 +64,7 @@
     <div v-if="content" class="kp-input-row">
       <textarea
         v-model="chatInput"
-        @keydown.enter.exact.prevent="send"
-        @keydown.shift.enter="chatInput += '\n'"
+        @keydown="onInputKeydown"
         placeholder="追问 AI…"
         :disabled="chatLoading"
         rows="1"
@@ -213,6 +212,13 @@ function renderChatMd(index, raw) {
   const text = getTypedMsg(index, raw)
   if (text === raw) return renderMd(raw)  // 已完成
   return renderMd(text)  // 打字中
+}
+
+function onInputKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault()
+    send()
+  }
 }
 
 function scrollBottom() {
