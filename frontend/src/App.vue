@@ -153,8 +153,8 @@ watch(isPractice, (val) => {
 }
 .kp-slide-leave-active {
   transition-property: opacity, transform !important;
-  transition-duration: 0.2s !important;
-  transition-timing-function: ease-in !important;
+  transition-duration: 0.25s, 0.2s !important;
+  transition-timing-function: ease-in, cubic-bezier(0.4, 0, 0.6, 1) !important;
 }
 .kp-slide-enter-from {
   opacity: 0 !important;
@@ -162,7 +162,7 @@ watch(isPractice, (val) => {
 }
 .kp-slide-leave-to {
   opacity: 0 !important;
-  transform: translateX(40px) scale(0.95) !important;
+  transform: translateX(20px) scale(0.97) !important;
 }
 
 .dark .kp-app-trigger {
