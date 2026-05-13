@@ -165,6 +165,18 @@ watch(isPractice, (val) => {
   transform: translateX(20px) scale(0.97) !important;
 }
 
+/* 手机端：面板从下方滑入 */
+@media (max-width: 768px) {
+  .kp-slide-enter-from {
+    opacity: 0 !important;
+    transform: translateY(40px) !important;
+  }
+  .kp-slide-leave-to {
+    opacity: 0 !important;
+    transform: translateY(20px) scale(0.97) !important;
+  }
+}
+
 .dark .kp-app-trigger {
   background: #2d1b69;
   border-color: #a78bfa;
