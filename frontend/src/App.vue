@@ -131,9 +131,12 @@ onMounted(() => {
     min-height: auto;
     max-height: none;
     align-self: center;
+    width: 340px;
+    max-width: 88vw;
     padding: 10px 24px;
     margin-top: 10px;
     font-size: 14px;
+    text-align: center;
   }
 }
 </style>

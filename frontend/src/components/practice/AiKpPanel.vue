@@ -288,9 +288,9 @@ onBeforeUnmount(() => { twStop() })
 }
 @media (max-width: 768px) {
   .kp-panel {
-    width: 100%;
+    width: 340px;
+    max-width: 88vw;
     min-width: 0;
-    max-width: none;
     height: 60vh;
     max-height: 60vh;
   }
