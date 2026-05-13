@@ -101,7 +101,7 @@ onMounted(() => {
   writing-mode: vertical-rl;
   text-orientation: mixed;
   padding: 14px 8px;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 2px solid #7c3aed;
   background: #ede9fe;
   color: #7c3aed;
