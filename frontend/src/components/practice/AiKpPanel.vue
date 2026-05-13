@@ -407,6 +407,10 @@ onBeforeUnmount(() => { twStop() })
 }
 .dark .kp-chat-input { background: #111827; border-color: #374151; color: #e5e7eb; }
 .kp-chat-input:focus { outline: none; border-color: #8b5cf6; }
+.kp-chat-input::-webkit-scrollbar { width: 4px; }
+.kp-chat-input::-webkit-scrollbar-track { background: transparent; }
+.kp-chat-input::-webkit-scrollbar-thumb { background: #d4c0f0; border-radius: 2px; }
+.dark .kp-chat-input::-webkit-scrollbar-thumb { background: #3a3050; }
 
 .kp-chat-send {
   padding: 8px 16px; border-radius: 8px; font-size: 13px;
