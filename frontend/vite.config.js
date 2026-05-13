@@ -9,7 +9,14 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        inlineDynamicImports: true,
+        manualChunks(id) {
+          if (id.includes('node_modules/vue') || id.includes('node_modules/vue-router') || id.includes('node_modules/pinia')) {
+            return 'vue-vendor'
+          }
+          if (id.includes('AiKpPanel') || id.includes('node_modules/marked') || id.includes('node_modules/highlight') || id.includes('node_modules/katex') || id.includes('node_modules/dompurify')) {
+            return 'kp-panel'
+          }
+        },
       },
     },
   },
