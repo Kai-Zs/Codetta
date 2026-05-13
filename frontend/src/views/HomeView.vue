@@ -14,6 +14,7 @@
           <div v-if="showMenu" @click.stop class="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-2 w-32 z-50">
             <button @click="goWrong" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">查看我的错题</button>
             <button @click="showMenu = false; confirmClear = true" class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-50 dark:hover:bg-gray-700">清空全部进度</button>
+            <button @click="showMenu = false; confirmLogout = true" class="w-full text-left px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">退出登陆</button>
           </div>
         </Transition>
       </div>
@@ -67,6 +68,8 @@
 
     <!-- 清空进度确认 -->
     <ConfirmDialog :open="confirmClear" msg="确定要清空全部做题进度吗？此操作不可恢复。" @confirm="doClear" @close="confirmClear = false" />
+    <!-- 退出登陆确认 -->
+    <ConfirmDialog :open="confirmLogout" msg="确定要退出登陆吗？" @confirm="doLogout" @close="confirmLogout = false" />
   </div>
 </template>
 
@@ -89,6 +92,7 @@ const showMenu = ref(false)
 const showFilter = ref(false)
 const showSettings = ref(false)
 const confirmClear = ref(false)
+const confirmLogout = ref(false)
 const progress = reactive({ done: 0, total: 618, accuracy: 0 })
 
 onMounted(async () => {
@@ -104,5 +108,10 @@ async function doClear() {
   await api.delete('/progress')
   progress.done = 0
   progress.accuracy = 0
+}
+
+async function doLogout() {
+  confirmLogout.value = false
+  await auth.logout()
 }
 </script>
