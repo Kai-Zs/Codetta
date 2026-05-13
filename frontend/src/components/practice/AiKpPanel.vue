@@ -64,8 +64,7 @@
     <div v-if="content" class="kp-input-row">
       <textarea
         v-model="chatInput"
-        @keydown="onInputKeydown"
-        placeholder="追问 AI…"
+        @keydown="onInputKeydown" @input="autoResize" placeholder="追问 AI…"
         :disabled="chatLoading"
         rows="1"
         ref="inputRef"
@@ -214,6 +213,13 @@ function renderChatMd(index, raw) {
   return renderMd(text)  // 打字中
 }
 
+function autoResize() {
+  const el = inputRef.value
+  if (!el) return
+  el.style.height = 'auto'
+  el.style.height = Math.min(el.scrollHeight, 160) + 'px'
+}
+
 function onInputKeydown(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault()
@@ -232,6 +238,7 @@ async function send() {
   if (!text || chatLoading.value) return
   chatMessages.value.push({ role: 'user', content: text })
   chatInput.value = ''
+  nextTick(() => autoResize())
   chatLoading.value = true
   scrollBottom()
 
