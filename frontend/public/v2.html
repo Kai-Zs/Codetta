@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Codetta v2.0 · AI 知识点解析</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #0f0a1e 0%, #1a1028 30%, #0d1225 60%, #0a0e1a 100%);
+    color: #e0ddf0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+  /* 背景动态光斑 */
+  .bg-orb {
+    position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.15; pointer-events: none;
+  }
+  .bg-orb-1 { width: 600px; height: 600px; background: #7c3aed; top: -200px; left: -100px; animation: orb-float 12s ease-in-out infinite; }
+  .bg-orb-2 { width: 500px; height: 500px; background: #3b82f6; bottom: -150px; right: -100px; animation: orb-float 15s ease-in-out infinite reverse; }
+  .bg-orb-3 { width: 400px; height: 400px; background: #ec4899; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: orb-float 10s ease-in-out infinite; }
+  @keyframes orb-float { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(40px, -30px); } 66% { transform: translate(-20px, 20px); } }
+  .bg-orb-3 { animation: orb-float 10s ease-in-out infinite 2s; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 80px 0 60px; }
+  .hero-badge {
+    display: inline-block; padding: 6px 18px; border-radius: 20px;
+    background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(59,130,246,0.2));
+    border: 1px solid rgba(124,58,237,0.3); font-size: 13px; color: #a78bfa; margin-bottom: 24px;
+    letter-spacing: 1px;
+  }
+  .hero h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 700; line-height: 1.2; margin-bottom: 16px; }
+  .hero h1 .brand { background: linear-gradient(135deg, #c4b5fd, #7c3aed, #6d28d9); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero h1 .ver {
+    background: linear-gradient(90deg, #f43f5e, #f97316, #eab308, #22c55e, #3b82f6, #8b5cf6, #ec4899);
+    background-size: 400% 100%; -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; animation: rainbow 3s linear infinite;
+  }
+  @keyframes rainbow { 0% { background-position: 0% 50%; } 100% { background-position: 400% 50%; } }
+  .hero p { font-size: 18px; color: #9ca3af; max-width: 600px; margin: 0 auto 32px; line-height: 1.7; }
+  .hero-cta {
+    display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+  }
+  .btn {
+    padding: 14px 32px; border-radius: 12px; font-size: 16px; font-weight: 600;
+    text-decoration: none; transition: all 0.3s ease; cursor: pointer; border: none;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff;
+    box-shadow: 0 4px 24px rgba(124,58,237,0.35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(124,58,237,0.5); }
+  .btn-outline {
+    border: 2px solid rgba(124,58,237,0.4); color: #c4b5fd; background: transparent;
+  }
+  .btn-outline:hover { border-color: #7c3aed; background: rgba(124,58,237,0.1); }
+
+  /* Features */
+  .features { padding: 60px 0; }
+  .section-title { text-align: center; font-size: 28px; font-weight: 700; margin-bottom: 48px; color: #f1f5f9; }
+  .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .feature-card {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px; padding: 28px; transition: all 0.3s ease;
+  }
+  .feature-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(124,58,237,0.3); transform: translateY(-2px); }
+  .feature-icon { font-size: 32px; margin-bottom: 16px; }
+  .feature-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; color: #e2e8f0; }
+  .feature-card p { font-size: 14px; color: #94a3b8; line-height: 1.7; }
+
+  /* Showcase */
+  .showcase { padding: 40px 0 80px; }
+  .showcase-box {
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px; padding: 40px; text-align: center;
+  }
+  .showcase-box h2 { font-size: 24px; margin-bottom: 12px; }
+  .showcase-box p { color: #94a3b8; font-size: 15px; line-height: 1.8; max-width: 700px; margin: 0 auto; }
+
+  /* Footer */
+  .footer { text-align: center; padding: 40px 0; border-top: 1px solid rgba(255,255,255,0.06); }
+  .footer p { font-size: 13px; color: #64748b; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 60px 0 40px; }
+    .hero h1 { font-size: 32px; }
+    .hero p { font-size: 15px; }
+    .feature-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
+
+<div class="container">
+  <header class="hero">
+    <div class="hero-badge">🎉 重大更新</div>
+    <h1><span class="brand">Codetta</span> <span class="ver">v2.0</span></h1>
+    <p>AI 知识点解析重磅上线。做完题，AI 帮你提炼考点、拆解难点、指出易错陷阱。支持追问，像助教一样随时答疑。</p>
+    <div class="hero-cta">
+      <a href="./" class="btn btn-primary">🚀 开始刷题</a>
+      <a href="#features" class="btn btn-outline">查看新功能</a>
+    </div>
+  </header>
+
+  <section class="features" id="features">
+    <h2 class="section-title">✨ 新功能一览</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3>AI 知识点解析</h3>
+        <p>做完题点一下，AI 即刻分析题目涉及的知识点。简要介绍 + 重难点 + 易错点，一目了然。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <h3>多轮追问</h3>
+        <p>没看懂？在输入框追问，AI 继续为你解答。像私教一样的对话体验，问到会为止。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📝</div>
+        <h3>Markdown 精美渲染</h3>
+        <p>AI 返回的内容支持代码高亮、数学公式、表格、引用块……一切清晰可读。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✨</div>
+        <h3>打字机动画</h3>
+        <p>AI 回复逐字蹦出，骨架屏流光加载，面板滑入滑出——每一次交互都是流畅体验。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>移动端完美适配</h3>
+        <p>手机、平板、电脑，三列等宽布局自适应。iOS Safari 深度优化，高度不再异常。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>数据统计可视化</h3>
+        <p>章节正确率柱状图、题型分析、易错题排行、近 14 天活跃趋势——学习数据一目了然。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="showcase">
+    <div class="showcase-box">
+      <h2>🔬 底层升级</h2>
+      <p>
+        判题 & 解析模型同步切换至 <strong>DeepSeek V4 Flash</strong>，更快更准。
+        独立 AI 数据库，缓存解析结果，重复查看不消耗 API 额度。
+        构建优化：代码分包，AI 面板模块按需延迟加载，首屏速度不减。
+      </p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>Codetta · 练笔小筑 &copy; 2026 &nbsp;|&nbsp; Powered by 凯Z闪 &nbsp;|&nbsp; <a href="https://kaizs.cn" style="color:#7c3aed;text-decoration:none;">kaizs.cn</a></p>
+  </footer>
+</div>
+</body>
+</html>
