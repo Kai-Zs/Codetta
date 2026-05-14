@@ -98,10 +98,12 @@ watch(isPractice, (val) => {
   position: relative;
   z-index: 10;
   display: flex;
+  flex-wrap: wrap;
   align-items: stretch;
   justify-content: center;
   flex-direction: row;
   gap: 0;
+  max-width: 100vw;
 }
 .kp-app-trigger {
   position: relative;
@@ -128,14 +130,15 @@ watch(isPractice, (val) => {
 .kp-editor-slot { display: none; }
 .kp-editor-slot--visible { display: block; width: 340px; max-width: 88vw; flex-shrink: 0; }
 
-/* 手机端：按钮和面板放到手机壳下面 */
-@media (max-width: 768px) {
+/* 平板/窄屏：折叠为列 */
+@media (max-width: 1100px) {
   .kp-app-row {
     flex-direction: column;
     align-items: center;
     padding: 0 12px;
+    gap: 10px !important;
   }
-  .kp-editor-slot--visible { width: 100%; max-width: 100%; }
+  .kp-editor-slot--visible { width: 340px; max-width: 88vw; }
   .kp-app-trigger {
     writing-mode: horizontal-tb;
     min-height: auto;
@@ -144,7 +147,7 @@ watch(isPractice, (val) => {
     width: 340px;
     max-width: 88vw;
     padding: 10px 24px;
-    margin-top: 10px;
+    margin-top: 4px;
     font-size: 14px;
     text-align: center;
   }
