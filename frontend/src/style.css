@@ -8,6 +8,11 @@
   --color-bg: #FAF5FF;
 }
 
+/* === 全局响应式缩放 === */
+html {
+  font-size: clamp(14px, 1.5vw, 16px);
+}
+
 /* === 暗黑模式过渡 === */
 .phone-shell, .phone-content, .bg-gradient-base, .bg-pattern-layer,
 .editor-panel, .editor-header, .editor-area, .editor-footer,

@@ -274,7 +274,7 @@ onBeforeUnmount(() => { twStop() })
   z-index: 20;
   flex: 1;
   min-width: 340px;
-  max-width: 880px;
+  max-width: min(880px, calc(100vw - 400px));
   min-height: 400px;
   max-height: calc(100vh - 7rem);
   max-height: calc(100dvh - 7rem);
