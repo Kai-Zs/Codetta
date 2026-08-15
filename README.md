@@ -39,63 +39,6 @@ practice/
 └── docs/                        # 设计文档
 ```
 
-## Ubuntu 部署（生产环境）
-
-### 前置要求
-
-- Ubuntu 22.04+，已安装 Nginx / OpenResty
-- 域名已配置 SSL（如 kaizs.cn）
-
-### 后端一键部署
-
-```bash
-# 首次：克隆 + 部署（替换 sk-xxx 为你的 DeepSeek API Key）
-git clone https://github.com/Kai-Zs/Codetta.git /var/www/codetta
-cd /var/www/codetta/backend
-bash deploy.sh sk-你的DeepSeek_API_Key
-
-# 后续更新
-git -C /var/www/codetta pull && bash /var/www/codetta/backend/deploy.sh
-```
-
-后端监听 `127.0.0.1:8765`，通过 systemd 管理：
-```bash
-systemctl status codetta     # 查看状态
-journalctl -u codetta -f     # 查看日志
-```
-
-### Nginx 反向代理
-
-在 server 块中添加：
-
-```nginx
-# 前端静态文件（如放在 /codetta 子路径）
-location /codetta {
-    try_files $uri $uri/ /codetta/index.html;
-}
-
-# 后端 API
-location /api {
-    proxy_pass http://127.0.0.1:8765;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_read_timeout 60s;
-}
-```
-
-### 前端构建部署
-
-```bash
-cd frontend
-npm install
-npm run build
-# 将 dist/ 内容复制到 Nginx 网站目录
-cp -r dist/* /opt/1panel/www/sites/kaizs.cn/index/codetta/
-```
-
-> 前端配置了 `base: '/codetta/'`，如需改为其他子路径，修改 `vite.config.js` 和 `router/index.js` 后重新构建。
-
 ## 本地开发
 
 ### 后端
